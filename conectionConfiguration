@@ -1,0 +1,10 @@
+    dataSourceConnInfoList = list("PG_HOST" = "localhost",
+    "PG_PORT" = "5432",
+    "PG_USER" = "postgres",
+    "PG_PASSWORD" = "teste2ou3",
+    "PG_DB_NAME"= "vessel_trajectory",
+    "PG_CONNECT_TIMEOUT" = "4",
+    "PG_CLIENT_ENCODING" = "CP1252")
+ dataSourceInfo = list("connInfo"= dataSourceConnInfoList,"type"="POSTGIS")
+
+   dataSetInfo = list ("tableName"="vessel_trajectories","timeName"="datahora","geomName"="ponto","trajId"="traj_id_unique","trajName"="","objId"="vessel_id")

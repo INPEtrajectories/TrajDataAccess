@@ -1,0 +1,1 @@
+PKG_LIBS += -lboost_system -lterralib_mod_st -lterralib_mod_stmemory -lterralib_mod_plugin -lterralib_mod_dataaccess
