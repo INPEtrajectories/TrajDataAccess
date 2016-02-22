@@ -1,0 +1,217 @@
+/*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
+
+    This file is part of the TerraLib - a Framework for building GIS enabled applications.
+
+    TerraLib is free software: you can redistribute it and/or modify
+    it under the terms of the GNU Lesser General Public License as published by
+    the Free Software Foundation, either version 3 of the License,
+    or (at your option) any later version.
+
+    TerraLib is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+    GNU Lesser General Public License for more details.
+
+    You should have received a copy of the GNU Lesser General Public License
+    along with TerraLib. See COPYING. If not, write to
+    TerraLib Team at <terralib-team@terralib.org>.
+ */
+
+/*!
+  \file terralib/terralib_config.h
+
+  \brief Global configuration flags for TerraLib.
+*/
+
+#ifndef __TERRALIB_INTERNAL_TERRALIB_CONFIG_H__
+#define __TERRALIB_INTERNAL_TERRALIB_CONFIG_H__
+
+#define TERRALIB_DATA_DIR "/home/diego/Documents/build/data"
+
+#define TERRALIB_REPORT_DIR "/home/diego/Documents/build/report"
+
+/* #undef TERRALIB_MOD_ADO_ENABLED */
+
+/* #undef TERRALIB_MOD_ANNOTATIONTEXT_ENABLED */
+
+#define TERRALIB_MOD_CLASSIFICATION_ENABLED
+
+#define TERRALIB_MOD_COLOR_ENABLED
+
+#define TERRALIB_MOD_COMMON_ENABLED
+
+#define TERRALIB_MOD_DATAACCESS_ENABLED
+
+#define TERRALIB_MOD_DATATYPE_ENABLED
+
+#define TERRALIB_MOD_FILTER_ENABLED
+
+#define TERRALIB_MOD_GDAL_ENABLED
+
+#define TERRALIB_MOD_GEOMETRY_ENABLED
+
+#define TERRALIB_MOD_GML_ENABLED
+
+/* #undef TERRALIB_MOD_GRAPH_ENABLED */
+
+/* #undef TERRALIB_MOD_LAYOUT_ENABLED */
+
+/* #undef TERRALIB_MOD_MAPTOOLS_ENABLED */
+
+#define TERRALIB_MOD_MEMORY_ENABLED
+
+#define TERRALIB_MOD_METADATA_ENABLED
+
+#define TERRALIB_MOD_OGR_ENABLED
+
+#define TERRALIB_MOD_PLUGIN_ENABLED
+
+#define TERRALIB_MOD_POSTGIS_ENABLED
+
+/* #undef TERRALIB_MOD_QT_APF_ENABLED */
+
+/* #undef TERRALIB_MOD_QT_PLUGINS_DATASOURCE_ADO_ENABLED */
+
+/* #undef TERRALIB_MOD_QT_PLUGINS_DATASOURCE_GDAL_ENABLED */
+
+/* #undef TERRALIB_MOD_QT_PLUGINS_DATASOURCE_TERRALIB4_ENABLED */
+
+/* #undef TERRALIB_MOD_QT_PLUGINS_DATASOURCE_OGR_ENABLED */
+
+/* #undef TERRALIB_MOD_QT_PLUGINS_DATASOURCE_POSTGIS_ENABLED */
+
+/* #undef TERRALIB_MOD_QT_PLUGINS_DATASOURCE_WCS_ENABLED */
+
+/* #undef TERRALIB_MOD_QT_PLUGINS_DATASOURCE_WFS_ENABLED */
+
+/* #undef TERRALIB_MOD_QT_PLUGINS_DATASOURCE_WMS_ENABLED */
+
+/* #undef TERRALIB_MOD_QT_PLUGINS_LAYOUT_ENABLED */
+
+/* #undef TERRALIB_MOD_QT_PLUGINS_RP_ENABLED */
+
+/* #undef TERRALIB_MOD_QT_PLUGINS_VP_ENABLED */
+
+/* #undef TERRALIB_MOD_QT_WIDGETS_ENABLED */
+
+#define TERRALIB_MOD_RASTER_ENABLED
+
+#define TERRALIB_MOD_RP_ENABLED
+
+#define TERRALIB_MOD_SAM_ENABLED
+
+#define TERRALIB_MOD_SRS_ENABLED
+
+#define TERRALIB_MOD_ST_ENABLED
+
+#define TERRALIB_MOD_STATISTICS_CORE_ENABLED
+
+#define TERRALIB_MOD_STATISTICS_QT_ENABLED
+
+#define TERRALIB_MOD_STMEMORY_ENABLED
+
+#define TERRALIB_MOD_SYMBOLOGY_ENABLED
+
+/* #undef TERRALIB_MOD_TERRALIB4_ENABLED */
+
+#define TERRALIB_MOD_VP_CORE_ENABLED
+
+/* #undef TERRALIB_MOD_VP_QT_ENABLED */
+
+#define TERRALIB_MOD_XERCES_ENABLED
+
+#define TERRALIB_MOD_XLINK_ENABLED
+
+#define TERRALIB_MOD_XML_ENABLED
+
+#define TERRALIB_MOD_XSD_ENABLED
+
+#define TERRALIB_MOD_WCS_ENABLED
+
+#define TERRALIB_MOD_WFS_ENABLED
+
+/* #undef TERRALIB_MOD_WMS_CORE_ENABLED */
+
+/* #undef TERRALIB_MOD_WMS_QT_ENABLED */
+
+/* #undef TERRALIB_STATIC_BUILD */
+
+#define TERRALIB_AUTOMATIC_INITIALIZATION
+
+#define TERRALIB_CODEBASE_PATH "/home/diego/Documents/terralib5/build/cmake/../.."
+
+#define TERRALIB_INSTALL_PREFIX_PATH "/usr/local"
+
+#define TERRALIB_DIR_VAR_NAME "TERRALIB_HOME"
+
+/* #undef TERRALIB_APACHE_LOG4CXX_ENABLED */
+
+#define TERRALIB_BOOST_ENABLED
+
+#define TERRALIB_GDAL_ENABLED
+
+#if defined(TERRALIB_GDAL_ENABLED)
+  #define TERRALIB_GDAL_DATA ""
+#endif
+
+#define TERRALIB_GEOS_ENABLED
+
+#define TERRALIB_GEOSC_ENABLED
+
+#define TERRALIB_GNU_GETTEXT_ENABLED
+
+#define TERRALIB_GNU_ICONV_ENABLED
+
+#define TERRALIB_LIBPQ_ENABLED
+
+/* #undef TERRALIB_LUA_ENABLED */
+
+#define TERRALIB_PROJ4_ENABLED
+
+/* #undef TERRALIB_QT4_ENABLED */
+
+#define TERRALIB_QT5_ENABLED
+
+#if defined(TERRALIB_QT4_ENABLED) || defined(TERRALIB_QT5_ENABLED)
+  #define TERRALIB_QT_ENABLED
+#endif
+
+#define TERRALIB_QWT_ENABLED
+
+/* #undef TERRALIB_QTPROPERTYBROWSER_ENABLED */
+
+/* #undef TERRALIB_SCIDB_ENABLED */
+
+/* #undef TERRALIB_SPATIALITE_ENABLED */
+
+/* #undef TERRALIB_SQLITE_ENABLED */
+
+#define TERRALIB_XERCES_ENABLED
+
+#ifdef TERRALIB_APACHE_LOG4CXX_ENABLED
+/* #undef TERRALIB_LOGGER_ENABLED */
+#endif
+
+#if defined(TERRALIB_APACHE_LOG4CXX_ENABLED) && defined(TERRALIB_LOGGER_ENABLED)
+/*
+   Note: If future versions need to control these variables during build time
+         add these variables in TerraLib's CMake script.
+ */
+#define TERRALIB_LOGGER_FATAL_ENABLED  1
+#define TERRALIB_LOGGER_ASSERT_ENABLED 1
+#define TERRALIB_LOGGER_ERROR_ENABLED  1
+#define TERRALIB_LOGGER_WARN_ENABLED   1
+#define TERRALIB_LOGGER_INFO_ENABLED   1
+#define TERRALIB_LOGGER_DEBUG_ENABLED  1
+#define TERRALIB_LOGGER_TRACE_ENABLED  1
+#endif
+
+#ifdef TERRALIB_GNU_GETTEXT_ENABLED
+#define TERRALIB_TRANSLATOR_ENABLED
+#endif
+
+#ifdef TERRALIB_GNU_ICONV_ENABLED
+#define TERRALIB_CHARENCODING_ENABLED
+#endif
+
+#endif  // __TERRALIB_INTERNAL_TERRALIB_CONFIG_H__
