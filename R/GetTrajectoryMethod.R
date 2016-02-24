@@ -1,9 +1,31 @@
 setGeneric(
+  name = "LoadTrajectory",
+  def = function(datasource, dataset)
+  {
+    loadPackages()
+    standardGeneric("LoadTrajectory")
+
+  }
+
+)
+
+setGeneric(
   name = "getTrajectory",
   def = function(datasource, dataset)
   {
     loadPackages()
     standardGeneric("getTrajectory")
+
+  }
+
+)
+
+setGeneric(
+  name = "getSubTrajectory",
+  def = function(datasource, dataset)
+  {
+    loadPackages()
+    standardGeneric("getSubTrajectory")
 
   }
 
@@ -32,6 +54,30 @@ setGeneric(
 )
 
 setMethod(
+  f = "LoadTrajectory",
+  signature = c("DataSourceInfo","DataSetInfo"),
+  definition = function(datasource, dataset)
+  {
+    loadPackages()
+    dsource <- list("connInfo"=datasource@connInfo,
+                    "title"=datasource@title,
+                    "accessDriver"=datasource@accessDriver,
+                    "type"=datasource@type)
+
+
+    dset <- list("tableName"=dataset@tableName,
+                 "phTimeName"=dataset@phTimeName,
+                 "geomName"=dataset@geomName,
+                 "trajId"=dataset@trajId,
+                 "trajName"=dataset@trajName,
+                 "objId"=dataset@trajName)
+    LoadTrajectoryDataSetFromPostGIS2(dsource,dset)
+    return (TRUE)
+  }
+)
+
+
+setMethod(
   f = "getTrajectory",
   signature = c("DataSourceInfo","DataSetInfo"),
   definition = function(datasource, dataset)
@@ -51,6 +97,29 @@ setMethod(
                  "objId"=dataset@trajName)
     traj1 <- getTrajectoryByTerralib(dsource,dset)
     return (traj1)
+  }
+)
+
+setMethod(
+  f = "getSubTrajectory",
+  signature = c("DataSourceInfo","DataSetInfo"),
+  definition = function(datasource, dataset)
+  {
+    loadPackages()
+    dsource <- list("connInfo"=datasource@connInfo,
+                    "title"=datasource@title,
+                    "accessDriver"=datasource@accessDriver,
+                    "type"=datasource@type)
+
+
+    dset <- list("tableName"=dataset@tableName,
+                 "phTimeName"=dataset@phTimeName,
+                 "geomName"=dataset@geomName,
+                 "trajId"=dataset@trajId,
+                 "trajName"=dataset@trajName,
+                 "objId"=dataset@trajName)
+    traj1 <- getSubTrajectoryByTerralibTraj(dsource,dset)
+    return (TerraLibTrajToTracks(traj1))
   }
 )
 

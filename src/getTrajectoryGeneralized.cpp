@@ -44,16 +44,12 @@ template<> std::map<std::string,std::string> as (SEXP dataset){
 
   Rcpp::List dataSet = dataset;
   std::map<std::string,std::string> ds;
-  std::cout<< "In dset";
 
   ds.insert(std::pair<std::string,Rcpp::String>("tableName",dataSet["tableName"]));
 
   ds.insert(std::pair<std::string,Rcpp::String>("timeName",dataSet["phTimeName"]));
-  std::cout<< "In dset 1";
   ds.insert(std::pair<std::string,Rcpp::String>("geomName",dataSet["geomName"]));
-  std::cout<< "In dset 1,5";
   ds.insert(std::pair<std::string,Rcpp::String>("trajId",dataSet["trajId"]));
-  std::cout<< "In dset 2";
   ds.insert(std::pair<std::string,Rcpp::String>("trajName",dataSet["trajName"]));
 
   ds.insert(std::pair<std::string,Rcpp::String>("objId",dataSet["objId"]));
@@ -63,11 +59,9 @@ template<> std::map<std::string,std::string> as (SEXP dataset){
 template<> te::da::DataSourceInfo as (SEXP datasource){
   Rcpp::List dataSource = datasource;
   te::da::DataSourceInfo ds;
-  std::cout<< "In datasource";
   Rcpp::String typestring = dataSource["type"];
-  std::cout<< "In ds 2";
+
   std::string tstring = typestring;
-  std::cout<< tstring;
 
   if(tstring == "OGR"){
 
@@ -126,16 +120,19 @@ template<> te::dt::TimePeriod as (SEXP timePeriod){
     return te::dt::TimePeriod(b,e);
 
 }
+//ainda nao le obj_id(arrumar isso no futuro proximo)
 template<> te::st::Trajectory as (SEXP trajectory){
   std::vector<double> x;
   std::vector<double> y;
   std::vector<std::string> tempo;
   std::vector<int> srid;
+  std::vector<int> obj_id; // pode ser alterado para string se conveniente.
   Rcpp::List tp(trajectory);
   x = tp["x"];
   y = tp["y"];
   tempo = tp["time"];
   srid = tp["srid"];
+  obj_id = tp["obj_id"];
   te::st::Trajectory traj;
   for(int i=0; i<x.size();i++){
     te::gm::Point pt = te::gm::Point(x[i],y[i],srid[i]);
@@ -153,12 +150,16 @@ template<> SEXP wrap(const te::st::Trajectory &tj){
   std::vector<double> y;
   std::vector<std::string> tempo;
   std::vector<int> srid;
+  std::vector<std::string> obj_id;
   Rcpp::List listaDePontos;
 
   te::st::TrajectoryObservationSet tos = tj.getObservations();
   te::st::TrajectoryObservationSet::const_iterator it = tos.begin();
   while(it != tos.end())
      {
+
+     obj_id.push_back(tj.getObjId());
+
      te::dt::DateTime* t = static_cast<te::dt::DateTime*>(it->first->clone());
      te::gm::Geometry* g = static_cast<te::gm::Geometry*>(it->second->clone());
 
@@ -184,6 +185,7 @@ template<> SEXP wrap(const te::st::Trajectory &tj){
   listaDePontos.push_back(x,"x");
   listaDePontos.push_back(y,"y");
   listaDePontos.push_back(srid,"srid");
+  listaDePontos.push_back(obj_id,"obj_id");
   return Rcpp::wrap(listaDePontos);
 }
 }
@@ -266,15 +268,14 @@ SEXP getTrajectoryByTerralib(SEXP datasource, SEXP dataset){
   ////////////////////COMEÇO DO CODIGO
   try
   {
-    std::cout<< "entrei";
+
     //Indicates the data source
     te::da::DataSourceInfo dsinfo = Rcpp::as<te::da::DataSourceInfo>(datasource);
-    std::cout<< "passou 1";
+
 
     //It creates a new Data Source and put it into the manager
     CreateDataSourceAndUpdateManager(dsinfo);
     std::map<std::string,std::string> dset = Rcpp::as<std::map<std::string,std::string> >(dataset);
-    std::cout<< "passou 12";
     te::st::TrajectoryDataSetInfo tjinfo(dsinfo, dset["tableName"], dset["timeName"], dset["geomName"], dset["trajId"], dset["trajName"]);
     te::st::TrajectoryDataSet* dataset = te::st::STDataLoader::getDataSet(tjinfo).release();
     dataset->moveBeforeFirst();
@@ -333,7 +334,8 @@ SEXP getTrajectoryByTerralib(SEXP datasource, SEXP dataset){
 }
 
 /*Metodo para buscar como vectorlist de trajectories
- trajetorias a partir de um datasource e um dataset */
+ trajetorias a partir de um datasource e um dataset
+pré determinado*/
 // [[Rcpp::export]]
 SEXP getTrajectoryByTerralibTraj(){
 
@@ -394,7 +396,61 @@ SEXP getTrajectoryByTerralibTraj(){
         std::string count = "trajetoria";
       count += NumberToString(i);
 
-        listaDePontos.push_back(trajectories[i],count);
+        listaDePontos.push_back(trajectories[i]/*,count*/ );
+
+    }
+    return (listaDePontos);
+  }
+  catch(const std::exception& e)
+  {
+    std::cout << std::endl << "An exception has occurried in TrajectoryExamplesFromKML: " << e.what() << std::endl;
+  }
+  catch(...)
+  {
+    std::cout << std::endl << "An unexpected exception has occurried in TrajectoryExamplesFromKML!" << std::endl;
+  }
+  /////////////////////FIM
+
+  return Rcpp::wrap("Fail");
+}
+
+/*Metodo para buscar como vectorlist de trajectories
+ trajetorias a partir de um datasource e um dataset
+enviado pelo usuario*/
+// [[Rcpp::export]]
+SEXP getSubTrajectoryByTerralibTraj(SEXP datasource, SEXP dataset){
+
+  ////////////////////COMEÇO DO CODIGO
+  try
+  {
+
+    //Indicates the data source
+    te::da::DataSourceInfo dsinfo = Rcpp::as<te::da::DataSourceInfo>(datasource);
+
+
+    //It creates a new Data Source and put it into the manager
+    CreateDataSourceAndUpdateManager(dsinfo);
+    std::map<std::string,std::string> dset = Rcpp::as<std::map<std::string,std::string> >(dataset);
+    te::st::TrajectoryDataSetInfo tjinfo(dsinfo, dset["tableName"], dset["timeName"], dset["geomName"], dset["trajId"], dset["trajName"]);
+
+    std::vector<te::st::TrajectoryDataSetInfo> output;
+    te::st::STDataLoader::getInfo(tjinfo, output);
+    te::st::TrajectoryDataSet* dataset = te::st::STDataLoader::getDataSet(tjinfo).release();
+
+    boost::ptr_vector<te::st::Trajectory> trajectories;
+    dataset->getTrajectorySet(trajectories);
+    ////////Codigo para mandar como Lista
+
+    Rcpp::List listaDePontos;
+
+
+    for (int i = 0; i < trajectories.size(); ++i)
+    {
+
+      std::string count = "trajetoria";
+      count += NumberToString(i);
+
+      listaDePontos.push_back(trajectories[i]/*,count*/);
 
     }
     return (listaDePontos);
@@ -562,6 +618,76 @@ void LoadTrajectoryDataSetFromPostGIS()
     //Use the STDataLoader to create a TrajectoryDataSet with all observations of all trajectories
     te::st::TrajectoryDataSetInfo tjinfo(dsinfo, datasetname, phTimeName, geomName, objIdName, "", tjIdName, "");
 
+
+
+    //Use the STDataLoader to get information about all distinct objects that exist in the dataset
+    std::vector<te::st::TrajectoryDataSetInfo> output;
+    te::st::STDataLoader::getInfo(tjinfo, output);
+
+    std::cout << std::endl << "Number of distinct objects and/or trajectories: " << output.size() << std::endl << std::endl;
+
+    for (std::size_t i = 0; i < output.size(); ++i)
+    {
+      std::cout << std::endl << "------------------------------------- " << std::endl;
+      std::cout << std::endl << "Object Id: " << output[i].getObjId() << std::endl;
+      std::cout << std::endl << "Trajectory Id: " << output[i].getTrajId() << std::endl;
+
+      //Get one trajectory of one object
+      std::auto_ptr<te::st::TrajectoryDataSet> trajdataset = te::st::STDataLoader::getDataSet(output[i]);
+
+      boost::ptr_vector<te::st::Trajectory> trajectories;
+
+      trajdataset->getTrajectorySet(trajectories);
+
+      std::cout << std::endl << "Number of trajectories: " << trajectories.size() << std::endl;
+
+      for (std::size_t i = 0; i < trajectories.size(); ++i)
+      {
+        //PrintTrajectory(&trajectories[i]);
+
+        //get trajectories whose st-extents interesect the i-th trajectory st-extent
+        te::gm::Envelope spatialExt = trajectories[i].getSpatialExtent();
+        std::auto_ptr<te::dt::DateTimePeriod> temporalExt = trajectories[i].getTemporalExtent();
+
+        //return the entire trajectories and not only the trajectory pactches (false)
+        std::auto_ptr<te::st::TrajectoryDataSet> trajdataset2 = te::st::STDataLoader::getDataSet(tjinfo,
+                                                                                                 *temporalExt.get(), te::dt::DURING, spatialExt, te::gm::INTERSECTS, te::common::FORWARDONLY, false);
+
+        boost::ptr_vector<te::st::Trajectory> trajectories2;
+
+        trajdataset2->getTrajectorySet(trajectories2);
+
+        std::cout << std::endl << "Number of trajectories that intersects: " << trajectories2.size() << std::endl;
+
+        //PrintTrajectory(&trajectories2[i]);
+      }
+    }
+  }
+  catch(const std::exception& e)
+  {
+    std::cout << std::endl << "An exception has occurred in LoadTrajectoryDataSetFromPostGIS: " << e.what() << std::endl;
+  }
+  catch(...)
+  {
+    std::cout << std::endl << "An unexpected exception has occurred in LoadTrajectoryDataSetFromPostGIS!" << std::endl;
+  }
+}
+
+// [[Rcpp::export]]
+void LoadTrajectoryDataSetFromPostGIS2(SEXP datasource, SEXP dataset)
+{
+  try
+  {
+
+    //Indicates the data source
+    te::da::DataSourceInfo dsinfo = Rcpp::as<te::da::DataSourceInfo>(datasource);
+
+
+    //It creates a new Data Source and put it into the manager
+    CreateDataSourceAndUpdateManager(dsinfo);
+    std::map<std::string,std::string> dset = Rcpp::as<std::map<std::string,std::string> >(dataset);
+
+    te::st::TrajectoryDataSetInfo tjinfo(dsinfo, dset["tableName"], dset["timeName"], dset["geomName"], dset["trajId"], dset["trajName"]);
 
 
     //Use the STDataLoader to get information about all distinct objects that exist in the dataset

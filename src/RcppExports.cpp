@@ -57,6 +57,18 @@ BEGIN_RCPP
     return __result;
 END_RCPP
 }
+// getSubTrajectoryByTerralibTraj
+SEXP getSubTrajectoryByTerralibTraj(SEXP datasource, SEXP dataset);
+RcppExport SEXP TrajDataAccess_getSubTrajectoryByTerralibTraj(SEXP datasourceSEXP, SEXP datasetSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject __result;
+    Rcpp::RNGScope __rngScope;
+    Rcpp::traits::input_parameter< SEXP >::type datasource(datasourceSEXP);
+    Rcpp::traits::input_parameter< SEXP >::type dataset(datasetSEXP);
+    __result = Rcpp::wrap(getSubTrajectoryByTerralibTraj(datasource, dataset));
+    return __result;
+END_RCPP
+}
 // getTrajectoryByTerralibStBoxXPtr
 SEXP getTrajectoryByTerralibStBoxXPtr(SEXP datasource, SEXP dataset, SEXP envelope, SEXP period);
 RcppExport SEXP TrajDataAccess_getTrajectoryByTerralibStBoxXPtr(SEXP datasourceSEXP, SEXP datasetSEXP, SEXP envelopeSEXP, SEXP periodSEXP) {
@@ -91,6 +103,17 @@ RcppExport SEXP TrajDataAccess_LoadTrajectoryDataSetFromPostGIS() {
 BEGIN_RCPP
     Rcpp::RNGScope __rngScope;
     LoadTrajectoryDataSetFromPostGIS();
+    return R_NilValue;
+END_RCPP
+}
+// LoadTrajectoryDataSetFromPostGIS2
+void LoadTrajectoryDataSetFromPostGIS2(SEXP datasource, SEXP dataset);
+RcppExport SEXP TrajDataAccess_LoadTrajectoryDataSetFromPostGIS2(SEXP datasourceSEXP, SEXP datasetSEXP) {
+BEGIN_RCPP
+    Rcpp::RNGScope __rngScope;
+    Rcpp::traits::input_parameter< SEXP >::type datasource(datasourceSEXP);
+    Rcpp::traits::input_parameter< SEXP >::type dataset(datasetSEXP);
+    LoadTrajectoryDataSetFromPostGIS2(datasource, dataset);
     return R_NilValue;
 END_RCPP
 }

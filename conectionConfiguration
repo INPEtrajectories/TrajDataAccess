@@ -7,4 +7,4 @@
     "PG_CLIENT_ENCODING" = "CP1252")
  dataSourceInfo = list("connInfo"= dataSourceConnInfoList,"type"="POSTGIS")
 
-   dataSetInfo = list ("tableName"="vessel_trajectories","timeName"="datahora","geomName"="ponto","trajId"="traj_id_unique","trajName"="","objId"="vessel_id")
+   dataSetInfo = list ("tableName"="vessel_trajectories","phTimeName"="datahora","geomName"="ponto","trajId"="traj_id_unique","trajName"="","objId"="vessel_id")
