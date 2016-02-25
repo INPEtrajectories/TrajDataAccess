@@ -159,7 +159,7 @@ setMethod(
     period <-list("begin"=stbox["min","time"],"end"=stbox["max","time"])
 
     traj1 <- getTrajectoryByTerralibStBox(datasource,dataset,envelope,period)
-    return (TerraLibTrajToTrack(traj1))
+    return (TerraLibTrajToTracks(traj1))
   }
 )
 
@@ -180,11 +180,11 @@ setMethod(
                  "geomName"=dataset@geomName,
                  "trajId"=dataset@trajId,
                  "trajName"=dataset@trajName,
-                 "objId"=dataset@trajName)
+                 "objId"=dataset@objId)
     bbox <- trackReference@sp@bbox
     envelope <- list("min"=list("x"=bbox[1,1],"y"=bbox[2,1]),"max"=list("x"=bbox[1,2],"y"=bbox[2,2]))
     stbox <- stbox(trackReference)
-    period <-list("begin"=stbox["min","time"],"end"=stbox["max","time"])
+    period <-list("begin"=as.character(stbox["min","time"]),"end"=as.character(stbox["max","time"]))
 
     traj1 <- getTrajectoryByTerralibStBox(dsource,dset,envelope,period)
     return (TerraLibTrajToTracks(traj1))

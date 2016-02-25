@@ -97,6 +97,7 @@ template<> te::da::DataSourceInfo as (SEXP datasource){
     return ds;
 }
 template<> te::gm::Envelope as (SEXP envelope){
+
   Rcpp::List mbr(envelope);
   Rcpp::List max = mbr["max"];
   Rcpp::List min = mbr["min"];
@@ -109,15 +110,19 @@ template<> te::gm::Envelope as (SEXP envelope){
 
 }
 template<> te::dt::TimePeriod as (SEXP timePeriod){
+  std::cout<<"linha 113";
   Rcpp::List tp(timePeriod);
+  std::cout<<"linha 115";
   Rcpp::String comeco = tp["begin"];
   Rcpp::String fim = tp["end"];
+  std::cout<<"linha 118";
   boost::posix_time::ptime begin(boost::posix_time::time_from_string(comeco));
   boost::posix_time::ptime end(boost::posix_time::time_from_string(fim));
+  std::cout<<"linha 121";
   te::dt::TimeInstant b(begin);
   te::dt::TimeInstant e(end);
-
-    return te::dt::TimePeriod(b,e);
+  std::cout<<"linha 124";
+  return te::dt::TimePeriod(b,e);
 
 }
 //ainda nao le obj_id(arrumar isso no futuro proximo)
@@ -528,12 +533,13 @@ SEXP getTrajectoryByTerralibStBox(SEXP datasource, SEXP dataset, SEXP envelope, 
     te::st::TrajectoryDataSetInfo tjinfo(dsinfo, dset["tableName"], dset["timeName"], dset["geomName"], dset["objId"], "", dset["trajId"], dset["trajName"]);
 
     te::gm::Envelope env = Rcpp::as<te::gm::Envelope>(envelope);
+    std::cout<<"linha 536";
+
     te::dt::TimePeriod per = Rcpp::as<te::dt::TimePeriod>(period);
-
+    std::cout<<"linha 539";
     //return the entire trajectories and not only the trajectory pactches (false)
-    std::auto_ptr<te::st::TrajectoryDataSet> trajdataset = te::st::STDataLoader::getDataSet(tjinfo,
-
-                                                                                             per, te::dt::DURING, env, te::gm::INTERSECTS, te::common::FORWARDONLY, false);
+    std::auto_ptr<te::st::TrajectoryDataSet> trajdataset = te::st::STDataLoader::getDataSet(tjinfo,per, te::dt::DURING, env, te::gm::INTERSECTS, te::common::FORWARDONLY, false);
+    std::cout<<"linha 542";
     boost::ptr_vector<te::st::Trajectory> trajectories;
 
     trajdataset->getTrajectorySet(trajectories);
