@@ -117,7 +117,7 @@ setMethod(
                  "geomName"=dataset@geomName,
                  "trajId"=dataset@trajId,
                  "trajName"=dataset@trajName,
-                 "objId"=dataset@trajName)
+                 "objId"=dataset@objId)
     traj1 <- getSubTrajectoryByTerralibTraj(dsource,dset)
     return (TerraLibTrajToTracks(traj1))
   }

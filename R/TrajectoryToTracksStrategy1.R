@@ -11,13 +11,16 @@ TerraLibTrajToTracks <- function(dado) {
       dat <- data.frame(x = dado[[i]]$x,y = dado[[i]]$y)
       xy <- coordinates(dat)
 
+      obj_id_dat <- data.frame(name = dado[[i]]$obj_id)
+
       print(i)
       #crs = CRS("+proj=longlat +ellps=WGS84") # longlat
       crs = CRS(paste("+init=epsg:",as.character(dado[[i]]$srid[1]),sep = "")) # longlat
 
       testnovo <-
         as.POSIXct(dado[[i]]$time,format = "%Y-%b-%d %H:%M:%S")
-      sti = STI(SpatialPoints(xy,crs),testnovo,testnovo)
+      #sti = STI(SpatialPoints(xy,crs),testnovo,testnovo)
+      sti = STIDF(SpatialPoints(xy,crs),testnovo,obj_id_dat,testnovo)
       A1 = Track(sti)
       if (obj_id != dado[[i]]$obj_id[1]) {
         tracksList <- c(tracksList,Tracks(trackList))
