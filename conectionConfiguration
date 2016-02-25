@@ -5,6 +5,6 @@
     "PG_DB_NAME"= "vessel_trajectory",
     "PG_CONNECT_TIMEOUT" = "4",
     "PG_CLIENT_ENCODING" = "CP1252")
- dataSourceInfo = list("connInfo"= dataSourceConnInfoList,"type"="POSTGIS")
+ dataSourceInfo = list("connInfo"= dataSourceConnInfoList,"type"="POSTGIS","accessDriver"="","title"="")
 
    dataSetInfo = list ("tableName"="vessel_trajectories","phTimeName"="datahora","geomName"="ponto","trajId"="traj_id_unique","trajName"="","objId"="vessel_id")

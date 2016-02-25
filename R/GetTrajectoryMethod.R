@@ -70,7 +70,7 @@ setMethod(
                  "geomName"=dataset@geomName,
                  "trajId"=dataset@trajId,
                  "trajName"=dataset@trajName,
-                 "objId"=dataset@trajName)
+                 "objId"=dataset@objId)
     LoadTrajectoryDataSetFromPostGIS2(dsource,dset)
     return (TRUE)
   }
@@ -169,15 +169,25 @@ setMethod(
   definition = function(datasource, dataset,trackReference)
   {
     loadPackages()
-    dsource <-toList(datasource)
-    dset <-toList(dset)
+    dsource <- list("connInfo"=datasource@connInfo,
+                    "title"=datasource@title,
+                    "accessDriver"=datasource@accessDriver,
+                    "type"=datasource@type)
+
+
+    dset <- list("tableName"=dataset@tableName,
+                 "phTimeName"=dataset@phTimeName,
+                 "geomName"=dataset@geomName,
+                 "trajId"=dataset@trajId,
+                 "trajName"=dataset@trajName,
+                 "objId"=dataset@trajName)
     bbox <- trackReference@sp@bbox
     envelope <- list("min"=list("x"=bbox[1,1],"y"=bbox[2,1]),"max"=list("x"=bbox[1,2],"y"=bbox[2,2]))
     stbox <- stbox(trackReference)
     period <-list("begin"=stbox["min","time"],"end"=stbox["max","time"])
 
     traj1 <- getTrajectoryByTerralibStBox(dsource,dset,envelope,period)
-    return (TerraLibTrajToTrack(traj1))
+    return (TerraLibTrajToTracks(traj1))
   }
 )
 

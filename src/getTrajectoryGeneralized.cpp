@@ -431,7 +431,7 @@ SEXP getSubTrajectoryByTerralibTraj(SEXP datasource, SEXP dataset){
     //It creates a new Data Source and put it into the manager
     CreateDataSourceAndUpdateManager(dsinfo);
     std::map<std::string,std::string> dset = Rcpp::as<std::map<std::string,std::string> >(dataset);
-    te::st::TrajectoryDataSetInfo tjinfo(dsinfo, dset["tableName"], dset["timeName"], dset["geomName"], dset["trajId"], dset["trajName"]);
+    te::st::TrajectoryDataSetInfo tjinfo(dsinfo, dset["tableName"], dset["timeName"], dset["geomName"], dset["objId"], "", dset["trajId"], dset["trajName"]);
 
     std::vector<te::st::TrajectoryDataSetInfo> output;
     te::st::STDataLoader::getInfo(tjinfo, output);
@@ -520,16 +520,39 @@ SEXP getTrajectoryByTerralibStBox(SEXP datasource, SEXP dataset, SEXP envelope, 
     //Indicates the data source
     te::da::DataSourceInfo dsinfo = Rcpp::as<te::da::DataSourceInfo>(datasource);
 
+
     //It creates a new Data Source and put it into the manager
     CreateDataSourceAndUpdateManager(dsinfo);
-
     std::map<std::string,std::string> dset = Rcpp::as<std::map<std::string,std::string> >(dataset);
+   // te::st::TrajectoryDataSetInfo tjinfo(dsinfo, dset["tableName"], dset["timeName"], dset["geomName"], dset["trajId"], dset["trajName"]);
+    te::st::TrajectoryDataSetInfo tjinfo(dsinfo, dset["tableName"], dset["timeName"], dset["geomName"], dset["objId"], "", dset["trajId"], dset["trajName"]);
 
     te::gm::Envelope env = Rcpp::as<te::gm::Envelope>(envelope);
     te::dt::TimePeriod per = Rcpp::as<te::dt::TimePeriod>(period);
-    te::st::TrajectoryDataSetInfo tjinfo(dsinfo, dset["tableName"], dset["timeName"], dset["geomName"], dset["trajId"], dset["trajName"]);
-    te::st::TrajectoryDataSet* dataset = te::st::STDataLoader::getDataSet(tjinfo,per,te::dt::OVERLAPS,env,te::gm::INTERSECTS,te::common::FORWARDONLY).release();
-    dataset->moveBeforeFirst();
+
+    //return the entire trajectories and not only the trajectory pactches (false)
+    std::auto_ptr<te::st::TrajectoryDataSet> trajdataset = te::st::STDataLoader::getDataSet(tjinfo,
+
+                                                                                             per, te::dt::DURING, env, te::gm::INTERSECTS, te::common::FORWARDONLY, false);
+    boost::ptr_vector<te::st::Trajectory> trajectories;
+
+    trajdataset->getTrajectorySet(trajectories);
+
+    Rcpp::List listaDePontos;
+
+
+    for (int i = 0; i < trajectories.size(); ++i)
+    {
+
+      std::string count = "trajetoria";
+      count += NumberToString(i);
+
+      listaDePontos.push_back(trajectories[i]/*,count*/);
+
+    }
+    return (listaDePontos);
+    /////Codigo antigo
+    /*dataset->moveBeforeFirst();
 
     ////////Codigo para mandar como Lista
     if(dataset == 0)
@@ -541,6 +564,8 @@ SEXP getTrajectoryByTerralibStBox(SEXP datasource, SEXP dataset, SEXP envelope, 
     std::vector<double> y;
     std::vector<std::string> tempo;
     std::vector<int> srid;
+    std::vector<std::string> obj_id;
+
     Rcpp::List listaDePontos;
 
 
@@ -567,8 +592,9 @@ SEXP getTrajectoryByTerralibStBox(SEXP datasource, SEXP dataset, SEXP envelope, 
     listaDePontos.push_back(x,"x");
     listaDePontos.push_back(y,"y");
     listaDePontos.push_back(srid,"srid");
+    listaDePontos.push_back(obj_id,"obj_id");
 
-    return (listaDePontos);
+    return (listaDePontos);*/
   }
   catch(const std::exception& e)
   {
@@ -687,7 +713,9 @@ void LoadTrajectoryDataSetFromPostGIS2(SEXP datasource, SEXP dataset)
     CreateDataSourceAndUpdateManager(dsinfo);
     std::map<std::string,std::string> dset = Rcpp::as<std::map<std::string,std::string> >(dataset);
 
-    te::st::TrajectoryDataSetInfo tjinfo(dsinfo, dset["tableName"], dset["timeName"], dset["geomName"], dset["trajId"], dset["trajName"]);
+    //te::st::TrajectoryDataSetInfo tjinfo(dsinfo, dset["tableName"], dset["timeName"], dset["geomName"], dset["trajId"], dset["trajName"]);
+  //  te::st::TrajectoryDataSetInfo tjinfo(dsinfo, datasetname, phTimeName, geomName, objIdName, "", tjIdName, "");
+    te::st::TrajectoryDataSetInfo tjinfo(dsinfo, dset["tableName"], dset["timeName"], dset["geomName"], dset["objId"], "", dset["trajId"], dset["trajName"]);
 
 
     //Use the STDataLoader to get information about all distinct objects that exist in the dataset
