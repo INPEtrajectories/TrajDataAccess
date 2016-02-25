@@ -110,18 +110,13 @@ template<> te::gm::Envelope as (SEXP envelope){
 
 }
 template<> te::dt::TimePeriod as (SEXP timePeriod){
-  std::cout<<"linha 113";
   Rcpp::List tp(timePeriod);
-  std::cout<<"linha 115";
   Rcpp::String comeco = tp["begin"];
   Rcpp::String fim = tp["end"];
-  std::cout<<"linha 118";
   boost::posix_time::ptime begin(boost::posix_time::time_from_string(comeco));
   boost::posix_time::ptime end(boost::posix_time::time_from_string(fim));
-  std::cout<<"linha 121";
   te::dt::TimeInstant b(begin);
   te::dt::TimeInstant e(end);
-  std::cout<<"linha 124";
   return te::dt::TimePeriod(b,e);
 
 }
