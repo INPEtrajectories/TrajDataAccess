@@ -57,12 +57,13 @@ template<> std::map<std::string,std::string> as (SEXP dataset){
   return ds;
 }
 template<> te::da::DataSourceInfo as (SEXP datasource){
+ // std::cout << std::endl << "começa?";
   Rcpp::List dataSource = datasource;
   te::da::DataSourceInfo ds;
   Rcpp::String typestring = dataSource["type"];
 
   std::string tstring = typestring;
-
+ // std::cout << std::endl << "Tentando converter  datasource";
   if(tstring == "OGR"){
 
     std::map<std::string, std::string> connInfo;
@@ -75,7 +76,7 @@ template<> te::da::DataSourceInfo as (SEXP datasource){
   else if (tstring == "POSTGIS"){
     std::map<std::string, std::string> connInfo;
     Rcpp::List cInfo = dataSource["connInfo"] ;
-    std::cout<< "In ds 3";
+   // std::cout<< "In ds 3";
 
     connInfo.insert(std::pair<std::string,Rcpp::String>("PG_CLIENT_ENCODING",cInfo["PG_CLIENT_ENCODING"]));
     connInfo.insert(std::pair<std::string,Rcpp::String>("PG_CONNECT_TIMEOUT",cInfo["PG_CONNECT_TIMEOUT"]));
@@ -84,7 +85,7 @@ template<> te::da::DataSourceInfo as (SEXP datasource){
     connInfo.insert(std::pair<std::string,Rcpp::String>("PG_PORT",cInfo["PG_PORT"]));
     connInfo.insert(std::pair<std::string,Rcpp::String>("PG_USER",cInfo["PG_USER"]));
     connInfo.insert(std::pair<std::string,Rcpp::String>("PG_PASSWORD",cInfo["PG_PASSWORD"]));
-    std::cout<< "In ds 4";
+    //std::cout<< "In ds 4";
 
     ds.setConnInfo(connInfo);
     ds.setTitle(dataSource["title"]);
@@ -126,7 +127,8 @@ template<> te::st::Trajectory as (SEXP trajectory){
   std::vector<double> y;
   std::vector<std::string> tempo;
   std::vector<int> srid;
-  std::vector<int> obj_id; // pode ser alterado para string se conveniente.
+  std::vector<std::string> obj_id; //ainda não implementado
+  std::vector<std::string> uni_traj_id; //ainda não implementado
   Rcpp::List tp(trajectory);
   x = tp["x"];
   y = tp["y"];
@@ -151,6 +153,8 @@ template<> SEXP wrap(const te::st::Trajectory &tj){
   std::vector<std::string> tempo;
   std::vector<int> srid;
   std::vector<std::string> obj_id;
+  std::vector<std::string> uni_traj_id;
+
   Rcpp::List listaDePontos;
 
   te::st::TrajectoryObservationSet tos = tj.getObservations();
@@ -159,6 +163,7 @@ template<> SEXP wrap(const te::st::Trajectory &tj){
      {
 
      obj_id.push_back(tj.getObjId());
+     uni_traj_id.push_back(tj.getTrajId());
 
      te::dt::DateTime* t = static_cast<te::dt::DateTime*>(it->first->clone());
      te::gm::Geometry* g = static_cast<te::gm::Geometry*>(it->second->clone());
@@ -186,6 +191,7 @@ template<> SEXP wrap(const te::st::Trajectory &tj){
   listaDePontos.push_back(y,"y");
   listaDePontos.push_back(srid,"srid");
   listaDePontos.push_back(obj_id,"obj_id");
+  listaDePontos.push_back(uni_traj_id,"uni_traj_id");
   return Rcpp::wrap(listaDePontos);
 }
 }
@@ -271,12 +277,16 @@ SEXP getTrajectoryByTerralib(SEXP datasource, SEXP dataset){
 
     //Indicates the data source
     te::da::DataSourceInfo dsinfo = Rcpp::as<te::da::DataSourceInfo>(datasource);
-
+  //  std::cout << std::endl << "Leu o datasource info";
 
     //It creates a new Data Source and put it into the manager
     CreateDataSourceAndUpdateManager(dsinfo);
+  //  std::cout << std::endl << "Criou o mangaer";
     std::map<std::string,std::string> dset = Rcpp::as<std::map<std::string,std::string> >(dataset);
+//    std::cout << std::endl << "Leu o dataset info";
     te::st::TrajectoryDataSetInfo tjinfo(dsinfo, dset["tableName"], dset["timeName"], dset["geomName"], dset["trajId"], dset["trajName"]);
+//    std::cout << std::endl << "Criou o TjInfo";
+
     te::st::TrajectoryDataSet* dataset = te::st::STDataLoader::getDataSet(tjinfo).release();
     dataset->moveBeforeFirst();
 
@@ -551,6 +561,10 @@ SEXP getTrajectoryByTerralibStBox(SEXP datasource, SEXP dataset, SEXP envelope, 
       listaDePontos.push_back(trajectories[i]/*,count*/);
 
     }
+
+    te::da::DataSourceManager::getInstance().detach(dsinfo.getId());
+
+
     return (listaDePontos);
     /////Codigo antigo
     /*dataset->moveBeforeFirst();
