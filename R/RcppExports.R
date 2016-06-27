@@ -21,6 +21,10 @@ getTrajectoryByTerralibTraj <- function() {
     .Call('TrajDataAccess_getTrajectoryByTerralibTraj', PACKAGE = 'TrajDataAccess')
 }
 
+getSubTrajectoryByTerralibTraj <- function(datasource, dataset) {
+    .Call('TrajDataAccess_getSubTrajectoryByTerralibTraj', PACKAGE = 'TrajDataAccess', datasource, dataset)
+}
+
 getTrajectoryByTerralibStBoxXPtr <- function(datasource, dataset, envelope, period) {
     .Call('TrajDataAccess_getTrajectoryByTerralibStBoxXPtr', PACKAGE = 'TrajDataAccess', datasource, dataset, envelope, period)
 }
@@ -31,6 +35,10 @@ getTrajectoryByTerralibStBox <- function(datasource, dataset, envelope, period) 
 
 LoadTrajectoryDataSetFromPostGIS <- function() {
     invisible(.Call('TrajDataAccess_LoadTrajectoryDataSetFromPostGIS', PACKAGE = 'TrajDataAccess'))
+}
+
+LoadTrajectoryDataSetFromPostGIS2 <- function(datasource, dataset) {
+    invisible(.Call('TrajDataAccess_LoadTrajectoryDataSetFromPostGIS2', PACKAGE = 'TrajDataAccess', datasource, dataset))
 }
 
 getTrajectoryFromKML <- function() {

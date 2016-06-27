@@ -52,7 +52,7 @@ setGeneric(
   }
 
 )
-
+##testing method to verfiy if trajectories are loadable
 setMethod(
   f = "LoadTrajectory",
   signature = c("DataSourceInfo","DataSetInfo"),
@@ -76,7 +76,7 @@ setMethod(
   }
 )
 
-
+##Given a datasource and a dataset brings a track.
 setMethod(
   f = "getTrajectory",
   signature = c("DataSourceInfo","DataSetInfo"),
@@ -96,10 +96,11 @@ setMethod(
                  "trajName"=dataset@trajName,
                  "objId"=dataset@trajName)
     traj1 <- getTrajectoryByTerralib(dsource,dset)
-    return (traj1)
+    return (TerraLibTrajToTrack(traj1))
   }
 )
 
+##Given a datasource and a dataset brings all tracks.
 setMethod(
   f = "getSubTrajectory",
   signature = c("DataSourceInfo","DataSetInfo"),
@@ -120,6 +121,7 @@ setMethod(
                  "objId"=dataset@objId)
     traj1 <- getSubTrajectoryByTerralibTraj(dsource,dset)
     return (TerraLibTrajToTracks(traj1))
+    #return (traj1)
   }
 )
 
@@ -135,17 +137,37 @@ setMethod(
   }
 )
 
+
+##Given lists for an envelope, a period ,a Datasource and a Dataset it brings back all tracks that intersect
+##the given STBOX.
 setMethod(
   f = "getTrajectoryByStBox",
-  signature = c("list","list","list","list"),
+  signature = c("DataSourceInfo","DataSetInfo","list","list"),
   definition = function(datasource, dataset,envelope,period)
   {
     loadPackages()
-    traj1 <- getTrajectoryByTerralibStBox(datasource,dataset,envelope,period)
-    return (TerraLibTrajToTrack(traj1))
+    dsource <- list("connInfo"=datasource@connInfo,
+                    "title"=datasource@title,
+                    "accessDriver"=datasource@accessDriver,
+                    "type"=datasource@type)
+
+
+    dset <- list("tableName"=dataset@tableName,
+                 "phTimeName"=dataset@phTimeName,
+                 "geomName"=dataset@geomName,
+                 "trajId"=dataset@trajId,
+                 "trajName"=dataset@trajName,
+                 "objId"=dataset@objId)
+    traj1 <- getTrajectoryByTerralibStBox(dsource,dset,envelope,period)
+    return (TerraLibTrajToTracks(traj1))
+    #return (traj1)
   }
 )
 
+
+
+##Given a Track ,a list for the Datasource and a list for the Dataset it brings back all tracks that intersect
+##the given Track.
 setMethod(
   f = "getTrajectoryByTrack",
   signature = c("list","list","Track"),
@@ -163,6 +185,8 @@ setMethod(
   }
 )
 
+##Given a Track ,a Datasource and a Dataset it brings back all tracks that intersect
+##the given Track.
 setMethod(
   f = "getTrajectoryByTrack",
   signature = c("DataSourceInfo","DataSetInfo","Track"),
