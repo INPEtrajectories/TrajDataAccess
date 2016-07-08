@@ -120,7 +120,11 @@ setMethod(
                  "trajName"=dataset@trajName,
                  "objId"=dataset@objId)
     traj1 <- getSubTrajectoryByTerralibTraj(dsource,dset)
-    return (TerraLibTrajToTracks(traj1))
+    trackslist <- TerraLibTrajToTracks(traj1)
+    if(length(trackslist)>0){
+    return(TracksCollection(trackslist))
+    }
+    return("Invalid")
     #return (traj1)
   }
 )
@@ -159,7 +163,11 @@ setMethod(
                  "trajName"=dataset@trajName,
                  "objId"=dataset@objId)
     traj1 <- getTrajectoryByTerralibStBox(dsource,dset,envelope,period)
-    return (TerraLibTrajToTracks(traj1))
+    trackslist <- TerraLibTrajToTracks(traj1)
+    if(length(trackslist)>0){
+      return(TracksCollection(trackslist))
+    }
+    return("Invalid")
     #return (traj1)
   }
 )
@@ -181,7 +189,11 @@ setMethod(
     period <-list("begin"=stbox["min","time"],"end"=stbox["max","time"])
 
     traj1 <- getTrajectoryByTerralibStBox(datasource,dataset,envelope,period)
-    return (TerraLibTrajToTracks(traj1))
+    trackslist <- TerraLibTrajToTracks(traj1)
+    if(length(trackslist)>0){
+      return(TracksCollection(trackslist))
+    }
+    return("Invalid")
   }
 )
 
@@ -211,7 +223,11 @@ setMethod(
     period <-list("begin"=as.character(stbox["min","time"]),"end"=as.character(stbox["max","time"]))
 
     traj1 <- getTrajectoryByTerralibStBox(dsource,dset,envelope,period)
-    return (TerraLibTrajToTracks(traj1))
+    trackslist <- TerraLibTrajToTracks(traj1)
+    if(length(trackslist)>0){
+      return(TracksCollection(trackslist))
+    }
+    return("Invalid")
   }
 )
 
