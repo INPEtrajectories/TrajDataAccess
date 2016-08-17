@@ -231,5 +231,38 @@ setMethod(
   }
 )
 
+##Given an envelope, a period ,a Datasource and a trajectorydataset it brings back all tracks that intersect
+##the given STBOX.
+setMethod(
+  f = "getTrajectoryByStBox",
+  signature = c("DataSourceInfo","TrajectoryDataSetInfo","Envelope","Period"),
+  definition = function(datasource, trajectorydataset,envelope,period)
+  {
+    loadPackages()
+    dsource <- list("connInfo"=datasource@connInfo,
+                    "title"=datasource@title,
+                    "accessDriver"=datasource@accessDriver,
+                    "type"=datasource@type)
 
+
+    dset <- list("tableName"=trajectorydataset@tableName,
+                 "phTimeName"=trajectorydataset@phTimeName,
+                 "geomName"=trajectorydataset@geomName,
+                 "trajId"=trajectorydataset@trajId,
+                 "trajName"=trajectorydataset@trajName,
+                 "objId"=trajectorydataset@objId)
+
+    env <- list("min"=list("x"=envelope@xMin,"y"=envelope@yMin),"max"=list("x"=envelope@xMax,"y"=envelope@yMax))
+    stbox <- stbox(trackReference)
+    per <-list("begin"=period@tMin,"end"=period@tMax)
+
+    traj1 <- getTrajectoryByTerralibStBox(dsource,dset,env,per)
+    trackslist <- TerraLibTrajToTracks(traj1)
+    if(length(trackslist)>0){
+      return(TracksCollection(trackslist))
+    }
+    return("Invalid")
+    #return (traj1)
+  }
+)
 

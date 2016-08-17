@@ -8,7 +8,13 @@ DataSourceInfo <- setClass(
     title = "character",
     accessDriver="character",
     type="character"
-  )
+  ),
 
+  prototype=list(
+    connInfo = list(),
+    title = "",
+    accessDriver="",
+    type=""
+  )
 
 )

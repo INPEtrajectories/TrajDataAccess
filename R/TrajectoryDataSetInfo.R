@@ -10,6 +10,15 @@ TrajectoryDataSetInfo <- setClass(
     trajId = "character" ,
     trajName = "character",
     objId = "character"
+  ),
+
+  prototype=list(
+    tableName = "",
+    phTimeName = "",
+    geomName = "",
+    trajId = "" ,
+    trajName = "",
+    objId = ""
   )
 
 
