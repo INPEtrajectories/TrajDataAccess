@@ -208,7 +208,7 @@ string NumberToString ( T Number )
   return ss.str();
 }
 
-
+//Terralib initializer, terralib must be activated before accessing data
 // [[Rcpp::export]]
 void initializeTerralib(){
 
@@ -221,7 +221,9 @@ void initializeTerralib(){
   te::st::STDataLoader::initialize();
 }
 
-///Descobrir como finalizar
+/*This method is never used. When used the computer crashes
+When the program is closed Terralib seems to close itself
+Might be relevant for future work */
 // [[Rcpp::export]]
 void finalizeTerralib(){
   te::st::STDataLoader::finalize();
@@ -245,12 +247,14 @@ SEXP getTrajectoryByTerralibXPtr(SEXP datasource, SEXP dataset){
     CreateDataSourceAndUpdateManager(dsinfo);
 
     std::map<std::string,std::string> dset = Rcpp::as<std::map<std::string,std::string> >(dataset);
+    te::st::TrajectoryDataSetInfo tjinfo(dsinfo, dset["tableName"], dset["timeName"], dset["geomName"], dset["objId"], "", dset["trajId"], dset["trajName"]);
 
-    te::st::TrajectoryDataSetInfo tjinfo(dsinfo, dset["tableName"], dset["timeName"], dset["geomName"], dset["trajId"], dset["trajName"]);
     te::st::TrajectoryDataSet* dataset = te::st::STDataLoader::getDataSet(tjinfo).release();
     dataset->moveBeforeFirst();
 
-    Rcpp::XPtr<te::st::TrajectoryDataSet> dsPtr(dataset);
+
+
+    Rcpp::XPtr<te::st::TrajectoryDataSet> dsPtr(dataset,true);
     return dsPtr;
   }
   catch(const std::exception& e)
@@ -405,7 +409,6 @@ SEXP getTrajectoryByTerralibTraj(){
 
         std::string count = "trajetoria";
       count += NumberToString(i);
-
         listaDePontos.push_back(trajectories[i]/*,count*/ );
 
     }
@@ -441,16 +444,24 @@ SEXP getSubTrajectoryByTerralibTraj(SEXP datasource, SEXP dataset){
     //It creates a new Data Source and put it into the manager
     CreateDataSourceAndUpdateManager(dsinfo);
     std::map<std::string,std::string> dset = Rcpp::as<std::map<std::string,std::string> >(dataset);
-    te::st::TrajectoryDataSetInfo tjinfo(dsinfo, dset["tableName"], dset["timeName"], dset["geomName"], dset["objId"], "", dset["trajId"], dset["trajName"]);
+
+     te::st::TrajectoryDataSetInfo tjinfo(dsinfo, dset["tableName"], dset["timeName"], dset["geomName"], dset["objId"], "", dset["trajId"], dset["trajName"]);
+
 
     std::vector<te::st::TrajectoryDataSetInfo> output;
     te::st::STDataLoader::getInfo(tjinfo, output);
     te::st::TrajectoryDataSet* dataset = te::st::STDataLoader::getDataSet(tjinfo).release();
 
+    if(dataset==0){
+      printf("Lista vazia");
+    }
     boost::ptr_vector<te::st::Trajectory> trajectories;
     dataset->getTrajectorySet(trajectories);
     ////////Codigo para mandar como Lista
 
+    if(trajectories.size()==0){
+      printf("Lista vazia");
+    }
     Rcpp::List listaDePontos;
 
 
@@ -500,6 +511,8 @@ SEXP getTrajectoryByTerralibStBoxXPtr(SEXP datasource, SEXP dataset, SEXP envelo
     te::st::TrajectoryDataSetInfo tjinfo(dsinfo, dset["tableName"], dset["timeName"], dset["geomName"], dset["trajId"], dset["trajName"]);
     te::st::TrajectoryDataSet* dataset = te::st::STDataLoader::getDataSet(tjinfo,per,te::dt::OVERLAPS,env,te::gm::INTERSECTS,te::common::FORWARDONLY).release();
     dataset->moveBeforeFirst();
+
+
 
     Rcpp::XPtr<te::st::TrajectoryDataSet> dsPtr(dataset);
     return dsPtr;
@@ -785,3 +798,399 @@ void LoadTrajectoryDataSetFromPostGIS2(SEXP datasource, SEXP dataset)
     std::cout << std::endl << "An unexpected exception has occurred in LoadTrajectoryDataSetFromPostGIS!" << std::endl;
   }
 }
+
+///Enviar trajetorias a partir de um ponteiro externo que retorna ao começo.
+// [[Rcpp::export]]
+SEXP receiveReturnXPTR(SEXP teste){
+  SEXP teste2 = teste;
+  boost::ptr_vector<te::st::Trajectory> trajectories;
+  Rcpp::XPtr<te::st::TrajectoryDataSet> dsPtr(teste2);
+  std::cout<<(dsPtr->getObjIdPropName())<<std::endl;
+  Rcpp::XPtr<te::st::TrajectoryDataSet> data = dsPtr;
+
+  data->moveBeforeFirst();
+  data->getTrajectorySet(trajectories);
+
+  Rcpp::List listaDePontos;
+
+
+  for (int i = 0; i < trajectories.size(); ++i)
+  {
+
+    std::string count = "trajetoria";
+    count += NumberToString(i);
+
+    listaDePontos.push_back(trajectories[i]/*,count*/);
+
+  }
+
+  //te::da::DataSourceManager::getInstance().detach(dsinfo.getId());
+trajectories.release();
+ // te::st::TrajectoryDataSet(trajectories);
+//teste = testeDataSet;
+  return (listaDePontos);
+}
+
+///Enviar trajetorias em 2 partes a partir de um ponteiro externo que retorna ao começo.
+// [[Rcpp::export]]
+SEXP receiveReturnPartsXPTR(SEXP teste){
+  SEXP teste2 = teste;
+  boost::ptr_vector<te::st::Trajectory> trajectories;
+  Rcpp::XPtr<te::st::TrajectoryDataSet> dsPtr(teste2);
+  std::cout<<(dsPtr->getObjIdPropName())<<std::endl;
+  Rcpp::XPtr<te::st::TrajectoryDataSet> data = dsPtr;
+
+  //data->moveBeforeFirst();
+  if(data->isBeforeBegin()){
+
+
+  data->getTrajectorySet(trajectories);
+  data->moveBeforeFirst();
+    Rcpp::List listaDePontos;
+
+
+    for (int i = 0; i < trajectories.size()/2; ++i)
+    {
+      data->moveNext();
+      std::string count = "trajetoria";
+      count += NumberToString(i);
+
+      listaDePontos.push_back(trajectories[i]/*,count*/);
+      std::cout<<sizeof listaDePontos << std::endl;
+
+    }
+
+    //te::da::DataSourceManager::getInstance().detach(dsinfo.getId());
+    trajectories.release();
+    // te::st::TrajectoryDataSet(trajectories);
+    //teste = testeDataSet;
+    return (listaDePontos);
+
+  }
+std::cout<<"Nao estou no começo"<<std::endl;
+
+  int j=0;
+  while(data->movePrevious()) {
+
+    std::cout<<j++<<std::endl;
+  }
+
+
+    data->getTrajectorySet(trajectories);
+
+  Rcpp::List listaDePontos;
+
+
+  for (int i = j; i < trajectories.size(); ++i)
+  {
+
+    std::string count = "trajetoria";
+    count += NumberToString(i);
+
+    listaDePontos.push_back(trajectories[i]/*,count*/);
+
+  }
+
+  //te::da::DataSourceManager::getInstance().detach(dsinfo.getId());
+  trajectories.release();
+  // te::st::TrajectoryDataSet(trajectories);
+  //teste = testeDataSet;
+  return (listaDePontos);
+}
+
+///Enviar trajetorias em x partes a partir de um ponteiro externo que retorna ao começo.
+// [[Rcpp::export]]
+SEXP getPartsXPTR(SEXP teste, int division){
+  SEXP teste2 = teste;
+  boost::ptr_vector<te::st::Trajectory> trajectories;
+  Rcpp::XPtr<te::st::TrajectoryDataSet> dsPtr(teste2);
+  std::cout<<(dsPtr->getObjIdPropName())<<std::endl;
+  Rcpp::XPtr<te::st::TrajectoryDataSet> data = dsPtr;
+  int div = division ;
+
+  int pos = 0;
+
+  while(data->movePrevious()){
+    pos++;
+    std::cout<<pos<<std::endl;
+  }
+
+    data->moveBeforeFirst();
+    data->getTrajectorySet(trajectories);
+    data->moveBeforeFirst();
+
+  int tempcount = 0;
+  while (tempcount < pos){
+    tempcount++;
+   // std::cout<<tempcount<<std::endl;
+
+    data->moveNext();
+  }
+
+  Rcpp::List listaDePontos;
+  std::cout<<trajectories.size() <<std::endl;
+  int tsize = 0;
+  tsize = trajectories.size();
+  int stop = (tsize/div);
+
+    if(stop <= tsize){
+      if((tsize-pos)<stop){
+        stop = (tsize-pos);
+      }
+    for (int i = 0; i < stop; ++i)
+    {
+
+      if(data->isAfterEnd()){
+        break;
+      }
+      data->moveNext();
+      std::string count = "trajetoria";
+      count += NumberToString(i);
+
+      listaDePontos.push_back(trajectories[pos+i]);
+
+     // std::cout<<sizeof listaDePontos << std::endl;
+
+    }
+    }
+    //te::da::DataSourceManager::getInstance().detach(dsinfo.getId());
+    trajectories.release();
+    // te::st::TrajectoryDataSet(trajectories);
+    //teste = testeDataSet;
+    return (listaDePontos);
+
+  }
+
+///Enviar parte x de trajetorias  divididas em y partes a partir de um ponteiro
+//externo que retorna ao começo.
+// [[Rcpp::export]]
+SEXP getSpecificPartsXPTR(SEXP teste,int part, int division){
+  SEXP teste2 = teste;
+  boost::ptr_vector<te::st::Trajectory> trajectories;
+  Rcpp::XPtr<te::st::TrajectoryDataSet> dsPtr(teste2);
+  std::cout<<(dsPtr->getObjIdPropName())<<std::endl;
+  Rcpp::XPtr<te::st::TrajectoryDataSet> data = dsPtr;
+  int div = division ;
+
+  int pos = 0;
+
+  data->moveBeforeFirst();
+  data->getTrajectorySet(trajectories);
+  data->moveBeforeFirst();
+
+  Rcpp::List listaDePontos;
+  std::cout<<trajectories.size() <<std::endl;
+  int tsize = 0;
+  tsize = trajectories.size();
+  int start = (tsize/div)*(part-1);
+  int stop = (tsize/div)*part;
+
+
+    for (int i = start; i < stop; ++i)
+    {
+
+      std::string count = "trajetoria";
+      count += NumberToString(i);
+
+      listaDePontos.push_back(trajectories[i]);
+
+      // std::cout<<sizeof listaDePontos << std::endl;
+
+    }
+
+  //te::da::DataSourceManager::getInstance().detach(dsinfo.getId());
+  trajectories.release();
+  // te::st::TrajectoryDataSet(trajectories);
+  //teste = testeDataSet;
+  return (listaDePontos);
+
+}
+
+//Gets trajectories and returns the one with the specified Trajectory ID
+// [[Rcpp::export]]
+SEXP getTrajectoryByTrajID(SEXP datasource, SEXP dataset, std::string id){
+
+  ////////////////////COMEÇO DO CODIGO
+  try
+  {
+
+    //Indicates the data source
+    te::da::DataSourceInfo dsinfo = Rcpp::as<te::da::DataSourceInfo>(datasource);
+
+
+    //It creates a new Data Source and put it into the manager
+    CreateDataSourceAndUpdateManager(dsinfo);
+    std::map<std::string,std::string> dset = Rcpp::as<std::map<std::string,std::string> >(dataset);
+
+    te::st::TrajectoryDataSetInfo tjinfo(dsinfo, dset["tableName"], dset["timeName"], dset["geomName"], dset["objId"], "", dset["trajId"], dset["trajName"]);
+
+
+    std::vector<te::st::TrajectoryDataSetInfo> output;
+    te::st::STDataLoader::getInfo(tjinfo, output);
+    te::st::TrajectoryDataSet* dataset = te::st::STDataLoader::getDataSet(tjinfo).release();
+
+    if(dataset==0){
+      printf("Lista vazia");
+    }
+    boost::ptr_vector<te::st::Trajectory> trajectories;
+    dataset->getTrajectorySet(trajectories);
+    ////////Codigo para mandar como Lista
+
+    if(trajectories.size()==0){
+      printf("Lista vazia");
+    }
+    Rcpp::List listaDePontos;
+
+
+    for (int i = 0; i < trajectories.size(); ++i)
+    {
+
+      std::string count = "trajetoria";
+      count += NumberToString(i);
+      if(trajectories[i].getTrajId() == id){
+      listaDePontos.push_back(trajectories[i]/*,count*/);
+      }
+    }
+    return (listaDePontos);
+  }
+  catch(const std::exception& e)
+  {
+    std::cout << std::endl << "An exception has occurried in TrajectoryExamplesFromKML: " << e.what() << std::endl;
+  }
+  catch(...)
+  {
+    std::cout << std::endl << "An unexpected exception has occurried in TrajectoryExamplesFromKML!" << std::endl;
+  }
+  /////////////////////FIM
+
+  return Rcpp::wrap("Fail");
+}
+
+//Gets trajectories and returns the ones with the specified obj ID
+// [[Rcpp::export]]
+SEXP getTrajectoryByObjID(SEXP datasource, SEXP dataset, std::string id){
+
+  ////////////////////COMEÇO DO CODIGO
+  try
+  {
+
+    //Indicates the data source
+    te::da::DataSourceInfo dsinfo = Rcpp::as<te::da::DataSourceInfo>(datasource);
+
+
+    //It creates a new Data Source and put it into the manager
+    CreateDataSourceAndUpdateManager(dsinfo);
+    std::map<std::string,std::string> dset = Rcpp::as<std::map<std::string,std::string> >(dataset);
+
+    te::st::TrajectoryDataSetInfo tjinfo(dsinfo, dset["tableName"], dset["timeName"], dset["geomName"], dset["objId"], "", dset["trajId"], dset["trajName"]);
+
+
+    std::vector<te::st::TrajectoryDataSetInfo> output;
+    te::st::STDataLoader::getInfo(tjinfo, output);
+    te::st::TrajectoryDataSet* dataset = te::st::STDataLoader::getDataSet(tjinfo).release();
+
+    if(dataset==0){
+      printf("Lista vazia");
+    }
+    boost::ptr_vector<te::st::Trajectory> trajectories;
+    dataset->getTrajectorySet(trajectories);
+    ////////Codigo para mandar como Lista
+
+    if(trajectories.size()==0){
+      printf("Lista vazia");
+    }
+    Rcpp::List listaDePontos;
+
+
+    for (int i = 0; i < trajectories.size(); ++i)
+    {
+
+      std::string count = "trajetoria";
+      count += NumberToString(i);
+      if(trajectories[i].getObjId() == id){
+        listaDePontos.push_back(trajectories[i]/*,count*/);
+      }
+    }
+    return (listaDePontos);
+  }
+  catch(const std::exception& e)
+  {
+    std::cout << std::endl << "An exception has occurried in TrajectoryExamplesFromKML: " << e.what() << std::endl;
+  }
+  catch(...)
+  {
+    std::cout << std::endl << "An unexpected exception has occurried in TrajectoryExamplesFromKML!" << std::endl;
+  }
+  /////////////////////FIM
+
+  return Rcpp::wrap("Fail");
+}
+
+///Enviar parte x de trajetorias  divididas em y partes a partir do db
+// [[Rcpp::export]]
+SEXP getSpecificPartsDB(SEXP datasource, SEXP dataset,int part, int division){
+  try{
+  //Indicates the data source
+  te::da::DataSourceInfo dsinfo = Rcpp::as<te::da::DataSourceInfo>(datasource);
+
+
+  //It creates a new Data Source and put it into the manager
+  CreateDataSourceAndUpdateManager(dsinfo);
+  std::map<std::string,std::string> dset = Rcpp::as<std::map<std::string,std::string> >(dataset);
+
+  te::st::TrajectoryDataSetInfo tjinfo(dsinfo, dset["tableName"], dset["timeName"], dset["geomName"], dset["objId"], "", dset["trajId"], dset["trajName"]);
+
+
+  std::vector<te::st::TrajectoryDataSetInfo> output;
+  te::st::STDataLoader::getInfo(tjinfo, output);
+  te::st::TrajectoryDataSet* dataset = te::st::STDataLoader::getDataSet(tjinfo).release();
+
+  int div = division ;
+
+  int pos = 0;
+
+  boost::ptr_vector<te::st::Trajectory> trajectories;
+
+  dataset->moveBeforeFirst();
+  dataset->getTrajectorySet(trajectories);
+
+  Rcpp::List listaDePontos;
+  std::cout<<trajectories.size() <<std::endl;
+  int tsize = 0;
+  tsize = trajectories.size();
+  int start = (tsize/div)*(part-1);
+  int stop = (tsize/div)*part;
+
+
+  for (int i = start; i < stop; ++i)
+  {
+
+    std::string count = "trajetoria";
+    count += NumberToString(i);
+
+    listaDePontos.push_back(trajectories[i]);
+
+    // std::cout<<sizeof listaDePontos << std::endl;
+
+  }
+
+  //te::da::DataSourceManager::getInstance().detach(dsinfo.getId());
+  trajectories.release();
+  // te::st::TrajectoryDataSet(trajectories);
+  //teste = testeDataSet;
+  return (listaDePontos);
+  }
+  catch(const std::exception& e)
+  {
+    std::cout << std::endl << "An exception has occurried in TrajectoryExamplesFromKML: " << e.what() << std::endl;
+  }
+  catch(...)
+  {
+    std::cout << std::endl << "An unexpected exception has occurried in TrajectoryExamplesFromKML!" << std::endl;
+  }
+  /////////////////////FIM
+
+  return Rcpp::wrap("Fail");
+}
+
+/////////////////////FIM

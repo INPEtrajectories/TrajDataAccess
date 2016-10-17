@@ -117,6 +117,93 @@ BEGIN_RCPP
     return R_NilValue;
 END_RCPP
 }
+// receiveReturnXPTR
+SEXP receiveReturnXPTR(SEXP teste);
+RcppExport SEXP TrajDataAccess_receiveReturnXPTR(SEXP testeSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject __result;
+    Rcpp::RNGScope __rngScope;
+    Rcpp::traits::input_parameter< SEXP >::type teste(testeSEXP);
+    __result = Rcpp::wrap(receiveReturnXPTR(teste));
+    return __result;
+END_RCPP
+}
+// receiveReturnPartsXPTR
+SEXP receiveReturnPartsXPTR(SEXP teste);
+RcppExport SEXP TrajDataAccess_receiveReturnPartsXPTR(SEXP testeSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject __result;
+    Rcpp::RNGScope __rngScope;
+    Rcpp::traits::input_parameter< SEXP >::type teste(testeSEXP);
+    __result = Rcpp::wrap(receiveReturnPartsXPTR(teste));
+    return __result;
+END_RCPP
+}
+// getPartsXPTR
+SEXP getPartsXPTR(SEXP teste, int division);
+RcppExport SEXP TrajDataAccess_getPartsXPTR(SEXP testeSEXP, SEXP divisionSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject __result;
+    Rcpp::RNGScope __rngScope;
+    Rcpp::traits::input_parameter< SEXP >::type teste(testeSEXP);
+    Rcpp::traits::input_parameter< int >::type division(divisionSEXP);
+    __result = Rcpp::wrap(getPartsXPTR(teste, division));
+    return __result;
+END_RCPP
+}
+// getSpecificPartsXPTR
+SEXP getSpecificPartsXPTR(SEXP teste, int part, int division);
+RcppExport SEXP TrajDataAccess_getSpecificPartsXPTR(SEXP testeSEXP, SEXP partSEXP, SEXP divisionSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject __result;
+    Rcpp::RNGScope __rngScope;
+    Rcpp::traits::input_parameter< SEXP >::type teste(testeSEXP);
+    Rcpp::traits::input_parameter< int >::type part(partSEXP);
+    Rcpp::traits::input_parameter< int >::type division(divisionSEXP);
+    __result = Rcpp::wrap(getSpecificPartsXPTR(teste, part, division));
+    return __result;
+END_RCPP
+}
+// getTrajectoryByTrajID
+SEXP getTrajectoryByTrajID(SEXP datasource, SEXP dataset, std::string id);
+RcppExport SEXP TrajDataAccess_getTrajectoryByTrajID(SEXP datasourceSEXP, SEXP datasetSEXP, SEXP idSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject __result;
+    Rcpp::RNGScope __rngScope;
+    Rcpp::traits::input_parameter< SEXP >::type datasource(datasourceSEXP);
+    Rcpp::traits::input_parameter< SEXP >::type dataset(datasetSEXP);
+    Rcpp::traits::input_parameter< std::string >::type id(idSEXP);
+    __result = Rcpp::wrap(getTrajectoryByTrajID(datasource, dataset, id));
+    return __result;
+END_RCPP
+}
+// getTrajectoryByObjID
+SEXP getTrajectoryByObjID(SEXP datasource, SEXP dataset, std::string id);
+RcppExport SEXP TrajDataAccess_getTrajectoryByObjID(SEXP datasourceSEXP, SEXP datasetSEXP, SEXP idSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject __result;
+    Rcpp::RNGScope __rngScope;
+    Rcpp::traits::input_parameter< SEXP >::type datasource(datasourceSEXP);
+    Rcpp::traits::input_parameter< SEXP >::type dataset(datasetSEXP);
+    Rcpp::traits::input_parameter< std::string >::type id(idSEXP);
+    __result = Rcpp::wrap(getTrajectoryByObjID(datasource, dataset, id));
+    return __result;
+END_RCPP
+}
+// getSpecificPartsDB
+SEXP getSpecificPartsDB(SEXP datasource, SEXP dataset, int part, int division);
+RcppExport SEXP TrajDataAccess_getSpecificPartsDB(SEXP datasourceSEXP, SEXP datasetSEXP, SEXP partSEXP, SEXP divisionSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject __result;
+    Rcpp::RNGScope __rngScope;
+    Rcpp::traits::input_parameter< SEXP >::type datasource(datasourceSEXP);
+    Rcpp::traits::input_parameter< SEXP >::type dataset(datasetSEXP);
+    Rcpp::traits::input_parameter< int >::type part(partSEXP);
+    Rcpp::traits::input_parameter< int >::type division(divisionSEXP);
+    __result = Rcpp::wrap(getSpecificPartsDB(datasource, dataset, part, division));
+    return __result;
+END_RCPP
+}
 // getTrajectoryFromKML
 SEXP getTrajectoryFromKML();
 RcppExport SEXP TrajDataAccess_getTrajectoryFromKML() {
