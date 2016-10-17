@@ -1,6 +1,6 @@
-DataSetInfo <- setClass(
+TrajectoryDataSetInfo <- setClass(
   # Set the name for the class
-  "DataSetInfo",
+  "TrajectoryDataSetInfo",
 
   # Define the slots
   slots = c(

@@ -41,6 +41,34 @@ LoadTrajectoryDataSetFromPostGIS2 <- function(datasource, dataset) {
     invisible(.Call('TrajDataAccess_LoadTrajectoryDataSetFromPostGIS2', PACKAGE = 'TrajDataAccess', datasource, dataset))
 }
 
+receiveReturnXPTR <- function(teste) {
+    .Call('TrajDataAccess_receiveReturnXPTR', PACKAGE = 'TrajDataAccess', teste)
+}
+
+receiveReturnPartsXPTR <- function(teste) {
+    .Call('TrajDataAccess_receiveReturnPartsXPTR', PACKAGE = 'TrajDataAccess', teste)
+}
+
+getPartsXPTR <- function(teste, division) {
+    .Call('TrajDataAccess_getPartsXPTR', PACKAGE = 'TrajDataAccess', teste, division)
+}
+
+getSpecificPartsXPTR <- function(teste, part, division) {
+    .Call('TrajDataAccess_getSpecificPartsXPTR', PACKAGE = 'TrajDataAccess', teste, part, division)
+}
+
+getTrajectoryByTrajID <- function(datasource, dataset, id) {
+    .Call('TrajDataAccess_getTrajectoryByTrajID', PACKAGE = 'TrajDataAccess', datasource, dataset, id)
+}
+
+getTrajectoryByObjID <- function(datasource, dataset, id) {
+    .Call('TrajDataAccess_getTrajectoryByObjID', PACKAGE = 'TrajDataAccess', datasource, dataset, id)
+}
+
+getSpecificPartsDB <- function(datasource, dataset, part, division) {
+    .Call('TrajDataAccess_getSpecificPartsDB', PACKAGE = 'TrajDataAccess', datasource, dataset, part, division)
+}
+
 getTrajectoryFromKML <- function() {
     .Call('TrajDataAccess_getTrajectoryFromKML', PACKAGE = 'TrajDataAccess')
 }

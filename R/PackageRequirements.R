@@ -14,4 +14,8 @@ loadPackages <- function() {
   if (!require(sp, quietly = TRUE)) {
     stop('The package sp was not installed')
   }
+
+  if (!require(RPostgreSQL, quietly = TRUE)) {
+    stop('The package RPostgreSQL was not installed')
+  }
 }

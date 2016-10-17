@@ -3,6 +3,7 @@ TerraLibTrajToTracks <- function(dado) {
   Sys.setlocale("LC_TIME", "en_US.UTF-8")
   trackList <- list()
   tracksList <- list()
+
 if (length(dado)>1&&dado!="Fail"){
   obj_id = dado[[1]]$obj_id[1]
   counter = 1;
@@ -40,5 +41,16 @@ if (length(dado)>1&&dado!="Fail"){
   }
   tracksList <- c(tracksList,Tracks(trackList))
 }
-  return(tracksList)
+  tllength <- length(tracksList)
+  if(tllength==1){
+    trackslength <-length(tracksList[[1]]@tracks)
+    if(trackslength==1){
+      return(tracksList[[1]]@tracks$Track1)
+    }
+    return(tracksList[[1]])
+  }
+  if(length(tracksList)>0){
+    return(TracksCollection(tracksList))
+  }
+  return("Invalid")
 }

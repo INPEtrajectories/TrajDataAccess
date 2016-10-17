@@ -43,6 +43,17 @@ setGeneric(
 )
 
 setGeneric(
+  name = "getTrajectoryBySTBox",
+  def = function(datasource, trajectorydataset, stbox)
+  {
+    loadPackages()
+    standardGeneric("getTrajectoryByStBox")
+
+  }
+
+)
+
+setGeneric(
   name = "getTrajectoryByTrack",
   def = function(datasource, trajectorydataset, trackReference)
   {
@@ -52,6 +63,42 @@ setGeneric(
   }
 
 )
+
+setGeneric(
+  name = "getBigTrajectory",
+  def = function(datasource, trajectorydataset)
+  {
+    loadPackages()
+    standardGeneric("getBigTrajectory")
+
+  }
+
+)
+
+
+setGeneric(
+  name = "getBigTrajectoryPart",
+  def = function(xptr)
+  {
+    loadPackages()
+    standardGeneric("getBigTrajectoryPart")
+
+  }
+
+)
+
+setGeneric(
+  name = "getBigTrajectoryPartDB",
+  def = function(datasource, trajectorydataset,part,divisions)
+  {
+    loadPackages()
+    standardGeneric("getBigTrajectoryPartDB")
+
+  }
+
+)
+
+
 ##testing method to verfiy if trajectories are loadable
 setMethod(
   f = "LoadTrajectory",
@@ -59,6 +106,7 @@ setMethod(
   definition = function(datasource, trajectorydataset)
   {
     loadPackages()
+    datasource<-returnDSOITLReady(datasource);
     dsource <- list("connInfo"=datasource@connInfo,
                     "title"=datasource@title,
                     "accessDriver"=datasource@accessDriver,
@@ -83,6 +131,8 @@ setMethod(
   definition = function(datasource, trajectorydataset)
   {
     loadPackages()
+    datasource<-returnDSOITLReady(datasource);
+
     dsource <- list("connInfo"=datasource@connInfo,
                     "title"=datasource@title,
                     "accessDriver"=datasource@accessDriver,
@@ -94,9 +144,17 @@ setMethod(
                  "geomName"=trajectorydataset@geomName,
                  "trajId"=trajectorydataset@trajId,
                  "trajName"=trajectorydataset@trajName,
-                 "objId"=trajectorydataset@trajName)
+                 "objId"=trajectorydataset@objId)
+    if(datasource@type=="OGR"){
     traj1 <- getTrajectoryByTerralib(dsource,dset)
-    return (TerraLibTrajToTrack(traj1))
+    return (TerraLibTrajToTracks(traj1))
+    }
+    else{
+      traj1 <- getSubTrajectoryByTerralibTraj(dsource,dset)
+      trackslist <- TerraLibTrajToTracks(traj1)
+      #if(length(trackslist)>0){
+      return(trackslist)
+    }
   }
 )
 
@@ -107,6 +165,8 @@ setMethod(
   definition = function(datasource, trajectorydataset)
   {
     loadPackages()
+    datasource<-returnDSOITLReady(datasource);
+
     dsource <- list("connInfo"=datasource@connInfo,
                     "title"=datasource@title,
                     "accessDriver"=datasource@accessDriver,
@@ -121,10 +181,10 @@ setMethod(
                  "objId"=trajectorydataset@objId)
     traj1 <- getSubTrajectoryByTerralibTraj(dsource,dset)
     trackslist <- TerraLibTrajToTracks(traj1)
-    if(length(trackslist)>0){
-    return(TracksCollection(trackslist))
-    }
-    return("Invalid")
+    #if(length(trackslist)>0){
+    return(trackslist)
+    #}
+    #return("Invalid")
     #return (traj1)
   }
 )
@@ -136,6 +196,7 @@ setMethod(
   definition = function(datasource, trajectorydataset)
   {
     loadPackages()
+
     traj1 <- getTrajectoryByTerralib(datasource,trajectorydataset)
     return (TerraLibTrajToTrack(traj1))
   }
@@ -150,6 +211,8 @@ setMethod(
   definition = function(datasource, trajectorydataset,envelope,period)
   {
     loadPackages()
+    datasource<-returnDSOITLReady(datasource);
+
     dsource <- list("connInfo"=datasource@connInfo,
                     "title"=datasource@title,
                     "accessDriver"=datasource@accessDriver,
@@ -191,7 +254,7 @@ setMethod(
     traj1 <- getTrajectoryByTerralibStBox(datasource,trajectorydataset,envelope,period)
     trackslist <- TerraLibTrajToTracks(traj1)
     if(length(trackslist)>0){
-      return(TracksCollection(trackslist))
+      return(trackslist)
     }
     return("Invalid")
   }
@@ -205,6 +268,8 @@ setMethod(
   definition = function(datasource, trajectorydataset,trackReference)
   {
     loadPackages()
+    datasource<-returnDSOITLReady(datasource);
+
     dsource <- list("connInfo"=datasource@connInfo,
                     "title"=datasource@title,
                     "accessDriver"=datasource@accessDriver,
@@ -225,7 +290,7 @@ setMethod(
     traj1 <- getTrajectoryByTerralibStBox(dsource,dset,envelope,period)
     trackslist <- TerraLibTrajToTracks(traj1)
     if(length(trackslist)>0){
-      return(TracksCollection(trackslist))
+      return(trackslist)
     }
     return("Invalid")
   }
@@ -239,6 +304,8 @@ setMethod(
   definition = function(datasource, trajectorydataset,envelope,period)
   {
     loadPackages()
+    datasource<-returnDSOITLReady(datasource);
+
     dsource <- list("connInfo"=datasource@connInfo,
                     "title"=datasource@title,
                     "accessDriver"=datasource@accessDriver,
@@ -253,16 +320,131 @@ setMethod(
                  "objId"=trajectorydataset@objId)
 
     env <- list("min"=list("x"=envelope@xMin,"y"=envelope@yMin),"max"=list("x"=envelope@xMax,"y"=envelope@yMax))
-    stbox <- stbox(trackReference)
     per <-list("begin"=period@tMin,"end"=period@tMax)
 
-    traj1 <- getTrajectoryByTerralibStBox(dsource,dset,env,per)
-    trackslist <- TerraLibTrajToTracks(traj1)
-    if(length(trackslist)>0){
-      return(TracksCollection(trackslist))
+       if(datasource@type=="OGR"){
+      traj1 <- getTrajectoryByTerralibStBox(dsource,dset,env,per)
+      return (TerraLibTrajToTracks(traj1))
+    }
+    else{
+      traj1 <- getTrajectoryByTerralibStBox(dsource,dset,env,per)
+      trackslist <- TerraLibTrajToTracks(traj1)
+      #if(length(trackslist)>0){
+      return(trackslist)
     }
     return("Invalid")
     #return (traj1)
   }
 )
 
+
+##Given a STBox ,a Datasource and a trajectorydataset it brings back all tracks that intersect
+##the given STBOX.
+setMethod(
+  f = "getTrajectoryBySTBox",
+  signature = c("DataSourceInfo","TrajectoryDataSetInfo","STBox"),
+  definition = function(datasource, trajectorydataset,stbox)
+  {
+    loadPackages()
+    datasource<-returnDSOITLReady(datasource);
+
+    dsource <- list("connInfo"=datasource@connInfo,
+                    "title"=datasource@title,
+                    "accessDriver"=datasource@accessDriver,
+                    "type"=datasource@type)
+
+
+    dset <- list("tableName"=trajectorydataset@tableName,
+                 "phTimeName"=trajectorydataset@phTimeName,
+                 "geomName"=trajectorydataset@geomName,
+                 "trajId"=trajectorydataset@trajId,
+                 "trajName"=trajectorydataset@trajName,
+                 "objId"=trajectorydataset@objId)
+
+    env <- list("min"=list("x"=stbox@xMin,"y"=stbox@yMin),"max"=list("x"=stbox@xMax,"y"=stbox@yMax))
+    per <-list("begin"=stbox@tMin,"end"=stbox@tMax)
+
+    if(datasource@type=="OGR"){
+      traj1 <- getTrajectoryByTerralibStBox(dsource,dset,env,per)
+      return (TerraLibTrajToTracks(traj1))
+    }
+    else{
+      traj1 <- getTrajectoryByTerralibStBox(dsource,dset,env,per)
+      trackslist <- TerraLibTrajToTracks(traj1)
+      #if(length(trackslist)>0){
+      return(trackslist)
+    }
+    return("Invalid")
+    #return (traj1)
+  }
+)
+
+##Given a datasource and a trajectorydataset brings a XPTR.
+setMethod(
+  f = "getBigTrajectory",
+  signature = c("DataSourceInfo","TrajectoryDataSetInfo"),
+  definition = function(datasource, trajectorydataset)
+  {
+    loadPackages()
+    datasource<-returnDSOITLReady(datasource);
+
+    dsource <- list("connInfo"=datasource@connInfo,
+                    "title"=datasource@title,
+                    "accessDriver"=datasource@accessDriver,
+                    "type"=datasource@type)
+
+
+    dset <- list("tableName"=trajectorydataset@tableName,
+                 "phTimeName"=trajectorydataset@phTimeName,
+                 "geomName"=trajectorydataset@geomName,
+                 "trajId"=trajectorydataset@trajId,
+                 "trajName"=trajectorydataset@trajName,
+                 "objId"=trajectorydataset@objId)
+
+      traj1 <- getTrajectoryByTerralibXPtr(dsource,dset)
+      return (traj1)
+
+  }
+)
+
+##Given a datasource and a trajectorydataset brings a XPTR.
+setMethod(
+  f = "getBigTrajectoryPart",
+  signature = c("externalptr"),
+  definition = function(xptr)
+  {
+    loadPackages()
+
+    traj1 <- getPartsXPTR(xptr,2)
+    return (TerraLibTrajToTracks(traj1))
+
+  }
+)
+
+##Given a datasource and a trajectorydataset brings a XPTR.
+setMethod(
+  f = "getBigTrajectoryPartDB",
+  signature = c("DataSourceInfo","TrajectoryDataSetInfo","numeric","numeric"),
+  definition = function(datasource, trajectorydataset,part,divisions)
+  {
+    loadPackages()
+    datasource<-returnDSOITLReady(datasource);
+
+    dsource <- list("connInfo"=datasource@connInfo,
+                    "title"=datasource@title,
+                    "accessDriver"=datasource@accessDriver,
+                    "type"=datasource@type)
+
+
+    dset <- list("tableName"=trajectorydataset@tableName,
+                 "phTimeName"=trajectorydataset@phTimeName,
+                 "geomName"=trajectorydataset@geomName,
+                 "trajId"=trajectorydataset@trajId,
+                 "trajName"=trajectorydataset@trajName,
+                 "objId"=trajectorydataset@objId)
+
+    traj1 <- getSpecificPartsDB(dsource,dset,part,divisions)
+    return (traj1)
+
+  }
+)
