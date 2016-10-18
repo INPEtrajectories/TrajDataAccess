@@ -47,7 +47,7 @@ setGeneric(
   def = function(datasource, trajectorydataset, stbox)
   {
     loadPackages()
-    standardGeneric("getTrajectoryByStBox")
+    standardGeneric("getTrajectoryBySTBox")
 
   }
 
@@ -97,7 +97,16 @@ setGeneric(
   }
 
 )
+setGeneric(
+  name = "getTrajectoryByIDList",
+  def = function(datasource, trajectorydataset, id)
+  {
+    loadPackages()
+    standardGeneric("getTrajectoryByIDList")
 
+  }
+
+)
 
 ##testing method to verfiy if trajectories are loadable
 setMethod(
@@ -354,12 +363,12 @@ setMethod(
                     "type"=datasource@type)
 
 
-    dset <- list("tableName"=trajectorydataset@tableName,
-                 "phTimeName"=trajectorydataset@phTimeName,
-                 "geomName"=trajectorydataset@geomName,
-                 "trajId"=trajectorydataset@trajId,
-                 "trajName"=trajectorydataset@trajName,
-                 "objId"=trajectorydataset@objId)
+dset <- list("tableName"=trajectorydataset@tableName,
+             "phTimeName"=trajectorydataset@phTimeName,
+             "geomName"=trajectorydataset@geomName,
+             "trajId"=trajectorydataset@trajId,
+             "trajName"=trajectorydataset@trajName,
+             "objId"=trajectorydataset@objId)
 
     env <- list("min"=list("x"=stbox@xMin,"y"=stbox@yMin),"max"=list("x"=stbox@xMax,"y"=stbox@yMax))
     per <-list("begin"=stbox@tMin,"end"=stbox@tMax)
@@ -445,6 +454,38 @@ setMethod(
 
     traj1 <- getSpecificPartsDB(dsource,dset,part,divisions)
     return (traj1)
+
+  }
+)
+
+##Given a datasource and brings the ID Trajectory.
+setMethod(
+  f = "getTrajectoryByIDList",
+  signature = c("DataSourceInfo","TrajectoryDataSetInfo","list"),
+  definition = function(datasource, trajectorydataset,id)
+  {
+    loadPackages()
+    datasource<-returnDSOITLReady(datasource);
+
+    dsource <- list("connInfo"=datasource@connInfo,
+                    "title"=datasource@title,
+                    "accessDriver"=datasource@accessDriver,
+                    "type"=datasource@type)
+
+
+    dset <- list("tableName"=trajectorydataset@tableName,
+                 "phTimeName"=trajectorydataset@phTimeName,
+                 "geomName"=trajectorydataset@geomName,
+                 "trajId"=trajectorydataset@trajId,
+                 "trajName"=trajectorydataset@trajName,
+                 "objId"=trajectorydataset@objId)
+
+    traj1 <- getTrajectoryByObjIDList(dsource,dset,id)
+    trackslist <- TerraLibTrajToTracks(traj1)
+    if(length(trackslist)>0){
+      return(trackslist)
+    }
+    return("Invalid")
 
   }
 )

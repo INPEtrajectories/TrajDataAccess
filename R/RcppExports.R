@@ -69,6 +69,10 @@ getSpecificPartsDB <- function(datasource, dataset, part, division) {
     .Call('TrajDataAccess_getSpecificPartsDB', PACKAGE = 'TrajDataAccess', datasource, dataset, part, division)
 }
 
+getTrajectoryByObjIDList <- function(datasource, dataset, idlist) {
+    .Call('TrajDataAccess_getTrajectoryByObjIDList', PACKAGE = 'TrajDataAccess', datasource, dataset, idlist)
+}
+
 getTrajectoryFromKML <- function() {
     .Call('TrajDataAccess_getTrajectoryFromKML', PACKAGE = 'TrajDataAccess')
 }
