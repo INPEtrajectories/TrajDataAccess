@@ -16,6 +16,8 @@ void CreateDataSourceAndUpdateManager(te::da::DataSourceInfo& dsinfo)
 {
   try
   {
+    //Eliminate old datsources so it won't get jammed
+    te::da::DataSourceManager::getInstance().detachAll();
     //Generates a randon id to the data source
     boost::uuids::basic_random_generator<boost::mt19937> gen;
     boost::uuids::uuid u = gen();

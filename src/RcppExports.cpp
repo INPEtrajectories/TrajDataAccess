@@ -204,6 +204,19 @@ BEGIN_RCPP
     return __result;
 END_RCPP
 }
+// getTrajectoryByObjIDList
+SEXP getTrajectoryByObjIDList(SEXP datasource, SEXP dataset, SEXP idlist);
+RcppExport SEXP TrajDataAccess_getTrajectoryByObjIDList(SEXP datasourceSEXP, SEXP datasetSEXP, SEXP idlistSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject __result;
+    Rcpp::RNGScope __rngScope;
+    Rcpp::traits::input_parameter< SEXP >::type datasource(datasourceSEXP);
+    Rcpp::traits::input_parameter< SEXP >::type dataset(datasetSEXP);
+    Rcpp::traits::input_parameter< SEXP >::type idlist(idlistSEXP);
+    __result = Rcpp::wrap(getTrajectoryByObjIDList(datasource, dataset, idlist));
+    return __result;
+END_RCPP
+}
 // getTrajectoryFromKML
 SEXP getTrajectoryFromKML();
 RcppExport SEXP TrajDataAccess_getTrajectoryFromKML() {

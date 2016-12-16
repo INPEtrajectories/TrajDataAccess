@@ -555,8 +555,8 @@ SEXP getTrajectoryByTerralibStBox(SEXP datasource, SEXP dataset, SEXP envelope, 
 
     te::dt::TimePeriod per = Rcpp::as<te::dt::TimePeriod>(period);
     std::cout<<"linha 539";
-    //return the entire trajectories and not only the trajectory pactches (false)
-    std::auto_ptr<te::st::TrajectoryDataSet> trajdataset = te::st::STDataLoader::getDataSet(tjinfo,per, te::dt::DURING, env, te::gm::INTERSECTS, te::common::FORWARDONLY, false);
+    //return the entire trajectories and not only the trajectory pactches (false) --- now its selecting patches
+    std::auto_ptr<te::st::TrajectoryDataSet> trajdataset = te::st::STDataLoader::getDataSet(tjinfo,per, te::dt::DURING, env, te::gm::INTERSECTS, te::common::FORWARDONLY, true);
     std::cout<<"linha 542";
 
     boost::ptr_vector<te::st::Trajectory> trajectories;
@@ -702,9 +702,9 @@ void LoadTrajectoryDataSetFromPostGIS()
         te::gm::Envelope spatialExt = trajectories[i].getSpatialExtent();
         std::auto_ptr<te::dt::DateTimePeriod> temporalExt = trajectories[i].getTemporalExtent();
 
-        //return the entire trajectories and not only the trajectory pactches (false)
+        //return the entire trajectories and not only the trajectory pactches (false) --- noww is getting patches
         std::auto_ptr<te::st::TrajectoryDataSet> trajdataset2 = te::st::STDataLoader::getDataSet(tjinfo,
-                                                                                                 *temporalExt.get(), te::dt::DURING, spatialExt, te::gm::INTERSECTS, te::common::FORWARDONLY, false);
+                                                                                                 *temporalExt.get(), te::dt::DURING, spatialExt, te::gm::INTERSECTS, te::common::FORWARDONLY, true);
 
         boost::ptr_vector<te::st::Trajectory> trajectories2;
 
@@ -774,9 +774,9 @@ void LoadTrajectoryDataSetFromPostGIS2(SEXP datasource, SEXP dataset)
         te::gm::Envelope spatialExt = trajectories[i].getSpatialExtent();
         std::auto_ptr<te::dt::DateTimePeriod> temporalExt = trajectories[i].getTemporalExtent();
 
-        //return the entire trajectories and not only the trajectory pactches (false)
+        //return the entire trajectories and not only the trajectory pactches (false) --- now its getting patches
         std::auto_ptr<te::st::TrajectoryDataSet> trajdataset2 = te::st::STDataLoader::getDataSet(tjinfo,
-                                                                                                 *temporalExt.get(), te::dt::DURING, spatialExt, te::gm::INTERSECTS, te::common::FORWARDONLY, false);
+                                                                                                 *temporalExt.get(), te::dt::DURING, spatialExt, te::gm::INTERSECTS, te::common::FORWARDONLY, true);
 
         boost::ptr_vector<te::st::Trajectory> trajectories2;
 
@@ -1142,7 +1142,7 @@ SEXP getSpecificPartsDB(SEXP datasource, SEXP dataset,int part, int division){
 
   std::vector<te::st::TrajectoryDataSetInfo> output;
   te::st::STDataLoader::getInfo(tjinfo, output);
-  te::st::TrajectoryDataSet* dataset = te::st::STDataLoader::getDataSet(tjinfo).release();
+                                                                                                                                                      te::st::TrajectoryDataSet* dataset = te::st::STDataLoader::getDataSet(tjinfo).release();
 
   int div = division ;
 
