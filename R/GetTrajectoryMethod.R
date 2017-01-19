@@ -55,7 +55,7 @@ setGeneric(
 
 setGeneric(
   name = "getTrajectoryByTrack",
-  def = function(datasource, trajectorydataset, trackReference)
+  def = function(datasource, trajectorydataset, trackReference,extraspace)
   {
     loadPackages()
     standardGeneric("getTrajectoryByTrack")
@@ -103,6 +103,17 @@ setGeneric(
   {
     loadPackages()
     standardGeneric("getTrajectoryByIDList")
+
+  }
+
+)
+
+setGeneric(
+  name = "getTrajectoryByTrajectoryID",
+  def = function(datasource, trajectorydataset, id)
+  {
+    loadPackages()
+    standardGeneric("getTrajectoryByTrajectoryID")
 
   }
 
@@ -269,6 +280,29 @@ setMethod(
   }
 )
 
+##Given a Track ,a list for the Datasource and a list for the Dataset it brings back all tracks that intersect
+##the given Track plus an extra space.
+setMethod(
+  f = "getTrajectoryByTrack",
+  signature = c("list","list","Track","numeric"),
+  definition = function(datasource, trajectorydataset,trackReference,extraspace)
+  {
+    loadPackages()
+
+    bbox <- trackReference@sp@bbox + extraspace
+    envelope <- list("min"=list("x"=bbox[1,1],"y"=bbox[2,1]),"max"=list("x"=bbox[1,2],"y"=bbox[2,2]))
+    stbox <- stbox(trackReference)
+    period <-list("begin"=stbox["min","time"],"end"=stbox["max","time"])
+
+    traj1 <- getTrajectoryByTerralibStBox(datasource,trajectorydataset,envelope,period)
+    trackslist <- TerraLibTrajToTracks(traj1)
+    if(length(trackslist)>0){
+      return(trackslist)
+    }
+    return("Invalid")
+  }
+)
+
 ##Given a Track ,a Datasource and a Dataset it brings back all tracks that intersect
 ##the given Track.
 setMethod(
@@ -292,6 +326,47 @@ setMethod(
                  "trajName"=trajectorydataset@trajName,
                  "objId"=trajectorydataset@objId)
     bbox <- trackReference@sp@bbox
+    envelope <- list("min"=list("x"=bbox[1,1],"y"=bbox[2,1]),"max"=list("x"=bbox[1,2],"y"=bbox[2,2]))
+    stbox <- stbox(trackReference)
+    period <-list("begin"=as.character(stbox["min","time"]),"end"=as.character(stbox["max","time"]))
+
+    traj1 <- getTrajectoryByTerralibStBox(dsource,dset,envelope,period)
+    trackslist <- TerraLibTrajToTracks(traj1)
+    if(length(trackslist)>0){
+      return(trackslist)
+    }
+    return("Invalid")
+  }
+)
+
+##Given a Track ,a Datasource and a Dataset it brings back all tracks that intersect
+##the given Track plus an extra space.
+setMethod(
+  f = "getTrajectoryByTrack",
+  signature = c("DataSourceInfo","TrajectoryDataSetInfo","Track","numeric"),
+  definition = function(datasource, trajectorydataset,trackReference,extraspace)
+  {
+    loadPackages()
+    datasource<-returnDSOITLReady(datasource);
+
+    dsource <- list("connInfo"=datasource@connInfo,
+                    "title"=datasource@title,
+                    "accessDriver"=datasource@accessDriver,
+                    "type"=datasource@type)
+
+
+    dset <- list("tableName"=trajectorydataset@tableName,
+                 "phTimeName"=trajectorydataset@phTimeName,
+                 "geomName"=trajectorydataset@geomName,
+                 "trajId"=trajectorydataset@trajId,
+                 "trajName"=trajectorydataset@trajName,
+                 "objId"=trajectorydataset@objId)
+    bbox <- trackReference@sp@bbox
+    #Adjust so points outside stbox but relevant will be caught
+    bbox[[1,1]]<-bbox[[1,1]]-extraspace
+    bbox[[2,1]]<-bbox[[2,1]]-extraspace
+    bbox[[1,2]]<-bbox[[1,2]]+extraspace
+    bbox[[2,2]]<-bbox[[2,2]]+extraspace
     envelope <- list("min"=list("x"=bbox[1,1],"y"=bbox[2,1]),"max"=list("x"=bbox[1,2],"y"=bbox[2,2]))
     stbox <- stbox(trackReference)
     period <-list("begin"=as.character(stbox["min","time"]),"end"=as.character(stbox["max","time"]))
@@ -482,6 +557,39 @@ setMethod(
 
     traj1 <- getTrajectoryByObjIDList(dsource,dset,id)
     trackslist <- TerraLibTrajToTracks(traj1)
+    if(length(trackslist)>0){
+      return(trackslist)
+    }
+    return("Invalid")
+
+  }
+)
+
+##Given a datasource and brings the ID Trajectory.
+setMethod(
+  f = "getTrajectoryByTrajectoryID",
+  signature = c("DataSourceInfo","TrajectoryDataSetInfo","character"),
+  definition = function(datasource, trajectorydataset,id)
+  {
+    loadPackages()
+    datasource<-returnDSOITLReady(datasource);
+
+    dsource <- list("connInfo"=datasource@connInfo,
+                    "title"=datasource@title,
+                    "accessDriver"=datasource@accessDriver,
+                    "type"=datasource@type)
+
+
+    dset <- list("tableName"=trajectorydataset@tableName,
+                 "phTimeName"=trajectorydataset@phTimeName,
+                 "geomName"=trajectorydataset@geomName,
+                 "trajId"=trajectorydataset@trajId,
+                 "trajName"=trajectorydataset@trajName,
+                 "objId"=trajectorydataset@objId)
+
+    traj1 <- getTrajectoryByTrajID(dsource,dset,id)
+    trackslist <- TerraLibTrajToTracks(traj1)
+
     if(length(trackslist)>0){
       return(trackslist)
     }

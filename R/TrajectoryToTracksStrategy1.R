@@ -4,7 +4,7 @@ TerraLibTrajToTracks <- function(dado) {
   trackList <- list()
   tracksList <- list()
 
-if (length(dado)>1&&dado!="Fail"){
+if (length(dado)>=1&&dado!="Fail"){
   obj_id = dado[[1]]$obj_id[1]
   counter = 1;
   for (i in 1:length(dado)) {

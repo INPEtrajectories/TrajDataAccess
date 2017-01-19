@@ -22,7 +22,7 @@ setMethod(
     }
     else{
       divisions = getNeededDivisions(datasource,trajectorydataset)
-      query <- paste("SELECT ST_AsText(ST_SetSRID(ST_Extent(",trajectorydataset@geomName,"),4326)) as table_extent, max(",trajectorydataset@phTimeName,"), min(",trajectorydataset@phTimeName,") FROM barcos_filtrados;",sep="" )
+      query <- paste("SELECT ST_AsText(ST_SetSRID(ST_Extent(",trajectorydataset@geomName,"),4326)) as table_extent, max(",trajectorydataset@phTimeName,"), min(",trajectorydataset@phTimeName,") FROM ", trajectorydataset@tableName,";",sep="" )
       drv <- dbDriver("PostgreSQL")
       con <- dbConnect(drv, dbname = datasource@db,
                        host = datasource@host, port = datasource@port,
