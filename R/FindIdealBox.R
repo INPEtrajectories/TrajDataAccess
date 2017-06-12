@@ -18,7 +18,10 @@ setMethod(
 
     os <- Sys.info()['sysname'][1]
     if(dsource@type=="OGR"){
-
+      stop("Method still not implemented for this DataSource type")
+    }
+    else if(dsource@type!="POSTGIS"){
+      stop("Method still not implemented for this DataSource type")
     }
     else{
       divisions = getNeededDivisions(datasource,trajectorydataset)

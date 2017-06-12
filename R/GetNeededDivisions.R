@@ -18,14 +18,17 @@ setGeneric(
 
       os <- Sys.info()['sysname'][1]
       if(dsource@type=="OGR"){
-
+        stop("Method still not implemented for this DataSource type")
+      }
+      else if(dsource@type!="POSTGIS"){
+        stop("Method still not implemented for this DataSource type")
       }
       else{
       if(os=="Linux"){
         mem <- system("awk '/MemTotal/ {print $2}' /proc/meminfo", intern = TRUE )
       }
         else{
-          mem <- memory.size()
+          mem <- memory.limit()*1024
         }
         query <- paste("SELECT pg_size_pretty(pg_relation_size(relid)) FROM pg_catalog.pg_statio_user_tables Where relname = '", trajectorydataset@tableName,"' ;",sep="" )
         drv <- dbDriver("PostgreSQL")
