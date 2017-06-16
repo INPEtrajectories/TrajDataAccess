@@ -4,12 +4,21 @@ TrajectoryDataSetInfo <- setClass(
 
   # Define the slots
   slots = c(
-    tableName = "character",
+    dataSetName = "character",
     phTimeName = "character",
     geomName = "character",
     trajId = "character" ,
     trajName = "character",
     objId = "character"
+  ),
+
+  prototype=list(
+    dataSetName = "",
+    phTimeName = "",
+    geomName = "",
+    trajId = "" ,
+    trajName = "",
+    objId = ""
   )
 
 

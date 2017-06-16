@@ -2,7 +2,7 @@ setGeneric(
   name = "findPartner",
   def = function(datasource,dataset,A1, dist, maxtime,mintime,tablename)
   {
-    .loadPackages()
+    loadPackages()
     if (!require(TrajDataAccess, quietly = TRUE)) {
       stop('The package TrajDataAccess was not installed')
     }

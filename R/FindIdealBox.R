@@ -1,15 +1,15 @@
 setGeneric(
-  name = "getIdealBoxes",
+  name = "getIdealSTBoxes",
   def = function(datasource, trajectorydataset)
   {
     loadPackages()
-    standardGeneric("getIdealBoxes")
+    standardGeneric("getIdealSTBoxes")
 
   })
 ##Given a datasource and a trajectorydataset tells the ideal number of
 ##divisions so the data won't crash the system.
 setMethod(
-  f = "getIdealBoxes",
+  f = "getIdealSTBoxes",
   signature = c("DataSourceInfo","TrajectoryDataSetInfo"),
   definition = function(datasource, trajectorydataset)
   {
@@ -25,12 +25,12 @@ setMethod(
     }
     else{
       divisions = getNeededDivisions(datasource,trajectorydataset)
-      query <- paste("SELECT ST_AsText(ST_SetSRID(ST_Extent(",trajectorydataset@geomName,"),4326)) as table_extent, max(",trajectorydataset@phTimeName,"), min(",trajectorydataset@phTimeName,") FROM ", trajectorydataset@tableName,";",sep="" )
+      query <- paste("SELECT ST_AsText(ST_SetSRID(ST_Extent(",trajectorydataset@geomName,"),4326)) as table_extent, max(",trajectorydataset@phTimeName,"), min(",trajectorydataset@phTimeName,") FROM ", trajectorydataset@dataSetName,";",sep="" )
       drv <- dbDriver("PostgreSQL")
       con <- dbConnect(drv, dbname = datasource@db,
                        host = datasource@host, port = datasource@port,
                        user = datasource@user, password = datasource@password)
-      print( dbExistsTable(con, trajectorydataset@tableName) )
+      print( dbExistsTable(con, trajectorydataset@dataSetName) )
       print(query)
       df_postgres <- dbGetQuery(con, query)
       tmax <- as.character(df_postgres[[2]])
@@ -46,9 +46,9 @@ setMethod(
       print(ymax)
       dy<- abs((as.numeric(ymax)-as.numeric(ymin))/divisions)
       query <- paste("SELECT count(*)
-FROM ",trajectorydataset@tableName,"
+FROM ",trajectorydataset@dataSetName,"
 WHERE
-",trajectorydataset@tableName,".",trajectorydataset@geomName," &&
+",trajectorydataset@dataSetName,".",trajectorydataset@geomName," &&
 ST_MakeEnvelope(",xmin,",",ymin,",",xmax,",", ymax,");",sep="" )
       print(query)
       df_postgres <- dbGetQuery(con, query)
@@ -73,9 +73,9 @@ ST_MakeEnvelope(",xmin,",",ymin,",",xmax,",", ymax,");",sep="" )
 
 
           query <- paste("SELECT count(*)
-FROM ",trajectorydataset@tableName,"
+FROM ",trajectorydataset@dataSetName,"
 WHERE
-",trajectorydataset@tableName,".",trajectorydataset@geomName," &&
+",trajectorydataset@dataSetName,".",trajectorydataset@geomName," &&
         ST_MakeEnvelope(",xmin,",",ymin,",",xmax,",", ymax,");",sep="" )
           df_postgres <- dbGetQuery(con, query)
           presentRegister <- as.numeric(df_postgres[[1]])

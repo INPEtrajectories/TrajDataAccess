@@ -2,7 +2,7 @@ setGeneric(
   name = "findBigPartnerDB",
   def = function(datasource,trajectorydataset, dist, tempo,mintime,stboxes,cores,tablename)
   {
-    .loadPackages()
+    loadPackages()
     if (!require(TrajDataAccess, quietly = TRUE)) {
       stop('The package TrajDataAccess was not installed')
     }
@@ -111,7 +111,7 @@ setMethod(
     cores = 1;
     registerDoMC(cores)
     PartnerList <- list()
-    stboxes<- getIdealBoxes(datasource,trajectorydataset)
+    stboxes<- getIdealSTBoxes(datasource,trajectorydataset)
     allPartner <- data.frame(Begin=as.POSIXct(character()),
                              End=as.POSIXct(character()),
                              Id1=character(),
@@ -304,7 +304,7 @@ setMethod(
     }
     registerDoMC(cores)
     PartnerList <- list()
-    stboxes<- getIdealBoxes(datasource,trajectorydataset)
+    stboxes<- getIdealSTBoxes(datasource,trajectorydataset)
     allPartner <- data.frame(Begin=as.POSIXct(character()),
                              End=as.POSIXct(character()),
                              Id1=character(),
@@ -487,7 +487,7 @@ setMethod(
     cores = 1;
     registerDoMC(cores)
     PartnerList <- list()
-    stboxes<- getIdealBoxes(datasource,trajectorydataset)
+    stboxes<- getIdealSTBoxes(datasource,trajectorydataset)
     allPartner <- data.frame(Begin=as.POSIXct(character()),
                              End=as.POSIXct(character()),
                              Id1=character(),
@@ -680,7 +680,7 @@ setMethod(
     }
     registerDoMC(cores)
     PartnerList <- list()
-    stboxes<- getIdealBoxes(datasource,trajectorydataset)
+    stboxes<- getIdealSTBoxes(datasource,trajectorydataset)
     allPartner <- data.frame(Begin=as.POSIXct(character()),
                              End=as.POSIXct(character()),
                              Id1=character(),

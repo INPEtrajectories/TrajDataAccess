@@ -30,13 +30,13 @@ setGeneric(
         else{
           mem <- memory.limit()*1024
         }
-        query <- paste("SELECT pg_size_pretty(pg_relation_size(relid)) FROM pg_catalog.pg_statio_user_tables Where relname = '", trajectorydataset@tableName,"' ;",sep="" )
+        query <- paste("SELECT pg_size_pretty(pg_relation_size(relid)) FROM pg_catalog.pg_statio_user_tables Where relname = '", trajectorydataset@dataSetName,"' ;",sep="" )
         drv <- dbDriver("PostgreSQL")
         con <- dbConnect(drv, dbname = datasource@db,
         host = datasource@host, port = datasource@port,
         user = datasource@user, password = datasource@password)
         on.exit(dbDisconnect(con))
-        dbExistsTable(con, trajectorydataset@tableName)
+        dbExistsTable(con, trajectorydataset@dataSetName)
         df_postgres <- dbGetQuery(con, query)
         tablesizechar <- unlist(strsplit(df_postgres[[1]], " ", fixed = TRUE))
         tablesize <- as.numeric(tablesizechar[[1]])
@@ -68,11 +68,11 @@ setMethod(
       else{
         mem <- memory.size()
       }
-      query <- paste("SELECT pg_size_pretty(pg_relation_size(relid)) FROM pg_catalog.pg_statio_user_tables Where relname = '", trajectorydataset@tableName,"' ;",sep="" )
+      query <- paste("SELECT pg_size_pretty(pg_relation_size(relid)) FROM pg_catalog.pg_statio_user_tables Where relname = '", trajectorydataset@dataSetName,"' ;",sep="" )
 
       con <- datasource
 
-      dbExistsTable(con, trajectorydataset@tableName)
+      dbExistsTable(con, trajectorydataset@dataSetName)
       df_postgres <- dbGetQuery(con, query)
       tablesizechar <- unlist(strsplit(df_postgres[[1]], " ", fixed = TRUE))
       tablesize <- as.numeric(tablesizechar[[1]])

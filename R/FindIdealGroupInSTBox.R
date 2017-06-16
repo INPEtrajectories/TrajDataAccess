@@ -29,8 +29,8 @@ setMethod(
                        user = datasource@user, password = datasource@password)
       on.exit(dbDisconnect(con))
 
-      print( dbExistsTable(con, trajectorydataset@tableName) )
-      query <- paste("SELECT count(*) FROM ",trajectorydataset@tableName," WHERE ",trajectorydataset@tableName,".",trajectorydataset@geomName," &&
+      print( dbExistsTable(con, trajectorydataset@dataSetName) )
+      query <- paste("SELECT count(*) FROM ",trajectorydataset@dataSetName," WHERE ",trajectorydataset@dataSetName,".",trajectorydataset@geomName," &&
         ST_MakeEnvelope(",stbox@xMin,",",stbox@yMin,",",stbox@xMax,",", stbox@yMax,")",";",sep="" )
       print(query)
 
@@ -42,9 +42,9 @@ setMethod(
       minSearchedRegister<-((idealentries)*0.9)
       maxSearchedRegister<-((idealentries)*1.1)
 
-      query <- paste("select ",trajectorydataset@objId,",count(*) as total from ",trajectorydataset@tableName,"
+      query <- paste("select ",trajectorydataset@objId,",count(*) as total from ",trajectorydataset@dataSetName,"
 WHERE
-",trajectorydataset@tableName,".",trajectorydataset@geomName," &&
+",trajectorydataset@dataSetName,".",trajectorydataset@geomName," &&
         ST_MakeEnvelope(",stbox@xMin,",",stbox@yMin,",",stbox@xMax,",", stbox@yMax,")"," group by ",trajectorydataset@objId," order by total",sep="" )
       df_postgres <- dbGetQuery(con, query)
       dividedlistofobjs <-list()
@@ -137,8 +137,8 @@ setMethod(
 
 
 
-      print( dbExistsTable(con, trajectorydataset@tableName) )
-      query <- paste("SELECT count(*) FROM ",trajectorydataset@tableName," WHERE ",trajectorydataset@tableName,".",trajectorydataset@geomName," &&
+      print( dbExistsTable(con, trajectorydataset@dataSetName) )
+      query <- paste("SELECT count(*) FROM ",trajectorydataset@dataSetName," WHERE ",trajectorydataset@dataSetName,".",trajectorydataset@geomName," &&
                      ST_MakeEnvelope(",stbox@xMin,",",stbox@yMin,",",stbox@xMax,",", stbox@yMax,")",";",sep="" )
       print(query)
 
@@ -150,9 +150,9 @@ setMethod(
       minSearchedRegister<-((idealentries)*0.9)
       maxSearchedRegister<-((idealentries)*1.1)
 
-      query <- paste("select ",trajectorydataset@objId,",count(*) as total from ",trajectorydataset@tableName,"
+      query <- paste("select ",trajectorydataset@objId,",count(*) as total from ",trajectorydataset@dataSetName,"
                      WHERE
-                     ",trajectorydataset@tableName,".",trajectorydataset@geomName," &&
+                     ",trajectorydataset@dataSetName,".",trajectorydataset@geomName," &&
                      ST_MakeEnvelope(",stbox@xMin,",",stbox@yMin,",",stbox@xMax,",", stbox@yMax,")"," group by ",trajectorydataset@objId," order by total",sep="" )
       df_postgres <- dbGetQuery(con, query)
       dividedlistofobjs <-list()

@@ -26,9 +26,9 @@ setMethod(
       con <- dbConnect(drv, dbname = datasource@db,
                        host = datasource@host, port = datasource@port,
                        user = datasource@user, password = datasource@password)
-      print( dbExistsTable(con, trajectorydataset@tableName) )
+      print( dbExistsTable(con, trajectorydataset@dataSetName) )
       query <- paste("SELECT count(*)
-                     FROM ",trajectorydataset@tableName,";",sep="" )
+                     FROM ",trajectorydataset@dataSetName,";",sep="" )
       print(query)
       totalRegister <- as.numeric(df_postgres[[1]])
       df_postgres <- dbGetQuery(con, query)
@@ -38,7 +38,7 @@ setMethod(
       minSearchedRegister<-((idealentries)*0.9)
       maxSearchedRegister<-((idealentries)*1.1)
 
-      query <- paste("select ",trajectorydataset@objId,",count(*) as total from ",trajectorydataset@tableName," group by ",trajectorydataset@objId," order by total",sep="" )
+      query <- paste("select ",trajectorydataset@objId,",count(*) as total from ",trajectorydataset@dataSetName," group by ",trajectorydataset@objId," order by total",sep="" )
           df_postgres <- dbGetQuery(con, query)
       dividedlistofobjs <-list()
       bi <-nrow(df_postgres_entries_list)

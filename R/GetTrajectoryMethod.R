@@ -32,19 +32,8 @@ setGeneric(
 )
 
 setGeneric(
-  name = "getTrajectoryByStBox",
-  def = function(datasource, trajectorydataset, envelope, period)
-  {
-    loadPackages()
-    standardGeneric("getTrajectoryByStBox")
-
-  }
-
-)
-
-setGeneric(
   name = "getTrajectoryBySTBox",
-  def = function(datasource, trajectorydataset, stbox)
+  def = function(datasource, trajectorydataset, envelope, period)
   {
     loadPackages()
     standardGeneric("getTrajectoryBySTBox")
@@ -52,6 +41,17 @@ setGeneric(
   }
 
 )
+
+#setGeneric(
+#  name = "getTrajectoryBySTBox",
+#  def = function(datasource, trajectorydataset, stbox)
+#  {
+ #   loadPackages()
+ #   standardGeneric("getTrajectoryBySTBox")
+#
+#  }
+#
+#)
 
 setGeneric(
   name = "getTrajectoryByTrack",
@@ -133,7 +133,7 @@ setMethod(
                     "type"=datasource@type)
 
 
-    dset <- list("tableName"=trajectorydataset@tableName,
+    dset <- list("tableName"=trajectorydataset@dataSetName,
                  "phTimeName"=trajectorydataset@phTimeName,
                  "geomName"=trajectorydataset@geomName,
                  "trajId"=trajectorydataset@trajId,
@@ -159,15 +159,15 @@ setMethod(
                     "type"=datasource@type)
 
 
-    dset <- list("tableName"=trajectorydataset@tableName,
+    dset <- list("tableName"=trajectorydataset@dataSetName,
                  "phTimeName"=trajectorydataset@phTimeName,
                  "geomName"=trajectorydataset@geomName,
                  "trajId"=trajectorydataset@trajId,
                  "trajName"=trajectorydataset@trajName,
                  "objId"=trajectorydataset@objId)
     if(datasource@type=="OGR"){
-    traj1 <- getTrajectoryByTerralib(dsource,dset)
-    return (TerraLibTrajToTracks(traj1))
+      traj1 <- getTrajectoryByTerralib(dsource,dset)
+      return (TerraLibTrajToTracks(traj1))
     }
     else{
       traj1 <- getSubTrajectoryByTerralibTraj(dsource,dset)
@@ -193,7 +193,7 @@ setMethod(
                     "type"=datasource@type)
 
 
-    dset <- list("tableName"=trajectorydataset@tableName,
+    dset <- list("tableName"=trajectorydataset@dataSetName,
                  "phTimeName"=trajectorydataset@phTimeName,
                  "geomName"=trajectorydataset@geomName,
                  "trajId"=trajectorydataset@trajId,
@@ -226,7 +226,7 @@ setMethod(
 ##Given lists for an envelope, a period ,a Datasource and a trajectorydataset it brings back all tracks that intersect
 ##the given STBOX.
 setMethod(
-  f = "getTrajectoryByStBox",
+  f = "getTrajectoryBySTBox",
   signature = c("DataSourceInfo","TrajectoryDataSetInfo","list","list"),
   definition = function(datasource, trajectorydataset,envelope,period)
   {
@@ -239,7 +239,7 @@ setMethod(
                     "type"=datasource@type)
 
 
-    dset <- list("tableName"=trajectorydataset@tableName,
+    dset <- list("tableName"=trajectorydataset@dataSetName,
                  "phTimeName"=trajectorydataset@phTimeName,
                  "geomName"=trajectorydataset@geomName,
                  "trajId"=trajectorydataset@trajId,
@@ -319,7 +319,7 @@ setMethod(
                     "type"=datasource@type)
 
 
-    dset <- list("tableName"=trajectorydataset@tableName,
+    dset <- list("tableName"=trajectorydataset@dataSetName,
                  "phTimeName"=trajectorydataset@phTimeName,
                  "geomName"=trajectorydataset@geomName,
                  "trajId"=trajectorydataset@trajId,
@@ -355,7 +355,7 @@ setMethod(
                     "type"=datasource@type)
 
 
-    dset <- list("tableName"=trajectorydataset@tableName,
+    dset <- list("tableName"=trajectorydataset@dataSetName,
                  "phTimeName"=trajectorydataset@phTimeName,
                  "geomName"=trajectorydataset@geomName,
                  "trajId"=trajectorydataset@trajId,
@@ -383,7 +383,7 @@ setMethod(
 ##Given an envelope, a period ,a Datasource and a trajectorydataset it brings back all tracks that intersect
 ##the given STBOX.
 setMethod(
-  f = "getTrajectoryByStBox",
+  f = "getTrajectoryBySTBox",
   signature = c("DataSourceInfo","TrajectoryDataSetInfo","Envelope","Period"),
   definition = function(datasource, trajectorydataset,envelope,period)
   {
@@ -396,7 +396,7 @@ setMethod(
                     "type"=datasource@type)
 
 
-    dset <- list("tableName"=trajectorydataset@tableName,
+    dset <- list("tableName"=trajectorydataset@dataSetName,
                  "phTimeName"=trajectorydataset@phTimeName,
                  "geomName"=trajectorydataset@geomName,
                  "trajId"=trajectorydataset@trajId,
@@ -406,7 +406,7 @@ setMethod(
     env <- list("min"=list("x"=envelope@xMin,"y"=envelope@yMin),"max"=list("x"=envelope@xMax,"y"=envelope@yMax))
     per <-list("begin"=period@tMin,"end"=period@tMax)
 
-       if(datasource@type=="OGR"){
+    if(datasource@type=="OGR"){
       traj1 <- getTrajectoryByTerralibStBox(dsource,dset,env,per)
       return (TerraLibTrajToTracks(traj1))
     }
@@ -426,9 +426,10 @@ setMethod(
 ##the given STBOX.
 setMethod(
   f = "getTrajectoryBySTBox",
-  signature = c("DataSourceInfo","TrajectoryDataSetInfo","STBox"),
-  definition = function(datasource, trajectorydataset,stbox)
+  signature = c("DataSourceInfo","TrajectoryDataSetInfo","STBox","missing"),
+  definition = function(datasource, trajectorydataset,envelope,period)
   {
+    stbox<-envelope
     loadPackages()
     datasource<-returnDSOITLReady(datasource);
 
@@ -438,12 +439,12 @@ setMethod(
                     "type"=datasource@type)
 
 
-dset <- list("tableName"=trajectorydataset@tableName,
-             "phTimeName"=trajectorydataset@phTimeName,
-             "geomName"=trajectorydataset@geomName,
-             "trajId"=trajectorydataset@trajId,
-             "trajName"=trajectorydataset@trajName,
-             "objId"=trajectorydataset@objId)
+    dset <- list("tableName"=trajectorydataset@dataSetName,
+                 "phTimeName"=trajectorydataset@phTimeName,
+                 "geomName"=trajectorydataset@geomName,
+                 "trajId"=trajectorydataset@trajId,
+                 "trajName"=trajectorydataset@trajName,
+                 "objId"=trajectorydataset@objId)
 
     env <- list("min"=list("x"=stbox@xMin,"y"=stbox@yMin),"max"=list("x"=stbox@xMax,"y"=stbox@yMax))
     per <-list("begin"=stbox@tMin,"end"=stbox@tMax)
@@ -478,15 +479,15 @@ setMethod(
                     "type"=datasource@type)
 
 
-    dset <- list("tableName"=trajectorydataset@tableName,
+    dset <- list("tableName"=trajectorydataset@dataSetName,
                  "phTimeName"=trajectorydataset@phTimeName,
                  "geomName"=trajectorydataset@geomName,
                  "trajId"=trajectorydataset@trajId,
                  "trajName"=trajectorydataset@trajName,
                  "objId"=trajectorydataset@objId)
 
-      traj1 <- getTrajectoryByTerralibXPtr(dsource,dset)
-      return (traj1)
+    traj1 <- getTrajectoryByTerralibXPtr(dsource,dset)
+    return (traj1)
 
   }
 )
@@ -520,7 +521,7 @@ setMethod(
                     "type"=datasource@type)
 
 
-    dset <- list("tableName"=trajectorydataset@tableName,
+    dset <- list("tableName"=trajectorydataset@dataSetName,
                  "phTimeName"=trajectorydataset@phTimeName,
                  "geomName"=trajectorydataset@geomName,
                  "trajId"=trajectorydataset@trajId,
@@ -548,7 +549,7 @@ setMethod(
                     "type"=datasource@type)
 
 
-    dset <- list("tableName"=trajectorydataset@tableName,
+    dset <- list("tableName"=trajectorydataset@dataSetName,
                  "phTimeName"=trajectorydataset@phTimeName,
                  "geomName"=trajectorydataset@geomName,
                  "trajId"=trajectorydataset@trajId,
@@ -580,7 +581,7 @@ setMethod(
                     "type"=datasource@type)
 
 
-    dset <- list("tableName"=trajectorydataset@tableName,
+    dset <- list("tableName"=trajectorydataset@dataSetName,
                  "phTimeName"=trajectorydataset@phTimeName,
                  "geomName"=trajectorydataset@geomName,
                  "trajId"=trajectorydataset@trajId,
