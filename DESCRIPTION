@@ -1,17 +1,16 @@
 Package: TrajDataAccess
 Type: Package
 Title: What the Package Does (Title Case)
-Version: 0.1.7.2
-Date: 2016-12-11
+Version: 0.1.7.7
+Date: 2017-06-11
 Author: Diego Monteiro
 Maintainer: Who to complain to <yourfault@somewhere.net>
 Description: More about what it does (maybe more than one line)
+Depends: trajectories, rgeos, rgdal, spacetime, sp, RPostgreSQL
 License: What license is it under?
 LazyData: TRUE
-Depends:rgeos, rgdal, trajectories, sp, RPostgreSQL
 Imports:
     Rcpp (>= 0.12.1)
 LinkingTo:
     Rcpp
-
-Suggests: TrajDataMining, doMC, parallel
+Suggests: doMC, TrajDataMining
