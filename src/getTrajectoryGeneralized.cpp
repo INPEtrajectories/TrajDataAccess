@@ -282,24 +282,29 @@ SEXP getTrajectoryByTerralib(SEXP datasource, SEXP dataset){
     //Indicates the data source
     te::da::DataSourceInfo dsinfo = Rcpp::as<te::da::DataSourceInfo>(datasource);
   //  std::cout << std::endl << "Leu o datasource info";
-
+  std::cout << std::endl << "Linha 285";
     //It creates a new Data Source and put it into the manager
-    CreateDataSourceAndUpdateManager(dsinfo);
+    CreateDataSourceAndUpdateManager2(dsinfo);
+    std::cout << std::endl << "Linha 288";
   //  std::cout << std::endl << "Criou o mangaer";
     std::map<std::string,std::string> dset = Rcpp::as<std::map<std::string,std::string> >(dataset);
 //    std::cout << std::endl << "Leu o dataset info";
+//te::st::TrajectoryDataSetInfo tjinfo(dsinfo, dset["tableName"], dset["timeName"], dset["geomName"], dset["objId"], "", dset["trajId"], dset["trajName"]);
+
     te::st::TrajectoryDataSetInfo tjinfo(dsinfo, dset["tableName"], dset["timeName"], dset["geomName"], dset["trajId"], dset["trajName"]);
 //    std::cout << std::endl << "Criou o TjInfo";
+std::cout << std::endl << "Linha 294";
 
     te::st::TrajectoryDataSet* dataset = te::st::STDataLoader::getDataSet(tjinfo).release();
     dataset->moveBeforeFirst();
-
+    std::cout << std::endl << "Linha 297";
     ////////Codigo para mandar como Lista
     if(dataset == 0)
     {
       std::cout << "Trajectory Data Set is NULL!" << std::endl;
       return Rcpp::wrap("DataSet Vazio");
     }
+    std::cout << std::endl << "Linha 304";
     std::vector<double> x;
     std::vector<double> y;
     std::vector<std::string> tempo;

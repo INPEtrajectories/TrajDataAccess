@@ -37,7 +37,7 @@ void LoadModules();
  \brief It creates a new DataSource and put it into the DataSource manager, using a random id.
  */
 void CreateDataSourceAndUpdateManager(te::da::DataSourceInfo& dsinfo);
-
+void CreateDataSourceAndUpdateManager2(te::da::DataSourceInfo& dsinfo);
 /*!
  \brief It groups the examples with trajectories (TrajectoryExamples.cpp).
  */
